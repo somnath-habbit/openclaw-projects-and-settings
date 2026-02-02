@@ -10,6 +10,7 @@ app = Flask(__name__)
 BASE_DIR = Path("/home/somnath/.openclaw/workspace/Auto_job_application")
 DB_PATH = BASE_DIR / "data" / "autobot.db"
 PROFILE_PATH = BASE_DIR / "data" / "user_profile.json"
+EXTRACTED_PROFILE_PATH = BASE_DIR / "data" / "extracted_profile.json"
 RESUME_DIR = BASE_DIR / "data" / "resumes"
 RESUME_DIR.mkdir(exist_ok=True)
 
@@ -52,10 +53,42 @@ def resume_preview(job_id):
     profile = get_profile()
     return render_template(f'resume_templates/{template_name}.html', job=job, profile=profile, preview_mode=True)
 
+@app.route('/resume_editor/<int:job_id>')
+def resume_editor(job_id):
+    job = db.execute("SELECT * FROM jobs WHERE id = ?", (job_id,), fetch=True)[0]
+    
+    # Load basic profile
+    profile = get_profile()
+    
+    # Load extracted profile
+    extracted_profile = {}
+    if EXTRACTED_PROFILE_PATH.exists():
+        with open(EXTRACTED_PROFILE_PATH, 'r') as f:
+            extracted_profile = json.load(f)
+            
+    # Merge or prefer extracted profile for editing
+    # We will pass both, but let the frontend decide how to use them
+    # Just in case, if basic profile is empty, try to use extracted
+    if not profile and 'profile' in extracted_profile:
+         profile = extracted_profile['profile']
+
+    return render_template('resume_editor.html', 
+                           job=job, 
+                           profile=profile, 
+                           extracted_profile=extracted_profile,
+                           profile_json=json.dumps(profile),
+                           extracted_profile_json=json.dumps(extracted_profile))
+
 @app.route('/cover_letter/<int:job_id>')
 def cover_letter_preview(job_id):
     job = db.execute("SELECT * FROM jobs WHERE id = ?", (job_id,), fetch=True)[0]
     return render_template('cover_letter.html', job=job)
+
+@app.route('/trigger_letter/<int:job_id>', methods=['POST'])
+def trigger_letter(job_id):
+    """Mark job for letter generation."""
+    db.execute("UPDATE jobs SET cover_letter = 'PENDING_GENERATION' WHERE id = ?", (job_id,))
+    return redirect(url_for('index'))
 
 @app.route('/generate_pdf/<int:job_id>', methods=['POST'])
 def generate_pdf(job_id):

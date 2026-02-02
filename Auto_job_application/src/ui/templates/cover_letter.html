@@ -29,7 +29,12 @@
     </div>
 
     <div class="letter-paper">
-        {% if job.cover_letter %}
+        {% if job.cover_letter == 'PENDING_GENERATION' %}
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3">Ultron is tailoring your cover letter... Please refresh in a moment.</p>
+            </div>
+        {% elif job.cover_letter %}
             {{ job.cover_letter }}
         {% else %}
             <div class="text-center text-muted">

@@ -62,27 +62,28 @@
 
     <div class="resume-container">
         <div class="header">
-            <div class="name">{{ profile.personal_info.first_name }} {{ profile.personal_info.last_name }}</div>
-            <div class="title-line">{{ profile.personal_info.headline }}</div>
+            <div class="name">{{ profile.profile.name if profile.profile else profile.personal_info.first_name + ' ' + profile.personal_info.last_name }}</div>
+            <div class="title-line">{{ profile.profile.title if profile.profile else profile.personal_info.headline }}</div>
             <div class="contact-info">
-                {{ profile.personal_info.location }} • {{ profile.personal_info.phone }} • {{ profile.personal_info.email }}<br>
-                <a href="{{ profile.personal_info.linkedin_url }}" style="text-decoration:none; color:#1a3a5f;">LinkedIn Profile</a>
+                {{ profile.profile.location if profile.profile else profile.personal_info.location }} • {{ profile.profile.phone if profile.profile else profile.personal_info.phone }} • {{ profile.profile.email if profile.profile else profile.personal_info.email }}<br>
+                <a href="{{ profile.socials[0].url if profile.socials else profile.personal_info.linkedin_url }}" style="text-decoration:none; color:#1a3a5f;">LinkedIn Profile</a>
             </div>
         </div>
 
         <div class="section-header">Executive Summary</div>
         <div class="exp-desc">
-            {{ profile.summary or "Strategic and results-driven Engineering Leader with over 10 years of experience in architecting scalable platforms and leading high-performing teams. Expert in microservices modernization, AI-augmented engineering systems, and driving 80%+ reduction in production incidents through advanced observability." }}
+            {{ profile.profile.bio if profile.profile else profile.summary }}
         </div>
 
         <div class="section-header">Professional Experience</div>
-        {% for exp in profile.experience %}
+        {% set experiences = profile.experiences if profile.experiences else profile.experience %}
+        {% for exp in experiences %}
         <div class="experience-item">
             <div class="exp-meta">
                 <span>{{ exp.company }}</span>
-                <span>{{ exp.start_date }} – {{ exp.end_date }}</span>
+                <span>{{ exp.startDate if exp.startDate else exp.start_date }} – {{ exp.endDate if exp.endDate else exp.end_date }}</span>
             </div>
-            <div class="exp-sub">{{ exp.title }}</div>
+            <div class="exp-sub">{{ exp.position if exp.position else exp.title }}</div>
             <div class="exp-desc">
                 {% if exp.description is string %}
                     {{ exp.description }}
@@ -99,10 +100,16 @@
 
         <div class="section-header">Technical Skills</div>
         <div class="skills-grid">
-            <div><span class="skill-cat">Management:</span> Engineering Leadership, Team Building, Agile/SAFe 6.0, Stakeholder Mgmt</div>
-            <div><span class="skill-cat">Cloud/Infra:</span> AWS (Lambda, ECS, SQS, RDS), GCP, GKE, Kubernetes</div>
-            <div><span class="skill-cat">Backend:</span> Node.js, Python (Django, Flask), System Design, Microservices</div>
-            <div><span class="skill-cat">Observability:</span> Datadog, Observability-driven Development, AI Agents</div>
+            {% if profile.skills and profile.skills[0] is mapping %}
+                {% for skill in profile.skills[:10] %}
+                <div><span class="skill-cat">{{ skill.category }}:</span> {{ skill.name }}</div>
+                {% endfor %}
+            {% else %}
+                <div><span class="skill-cat">Management:</span> Engineering Leadership, Team Building, Agile/SAFe 6.0, Stakeholder Mgmt</div>
+                <div><span class="skill-cat">Cloud/Infra:</span> AWS (Lambda, ECS, SQS, RDS), GCP, GKE, Kubernetes</div>
+                <div><span class="skill-cat">Backend:</span> Node.js, Python (Django, Flask), System Design, Microservices</div>
+                <div><span class="skill-cat">Observability:</span> Datadog, Observability-driven Development, AI Agents</div>
+            {% endif %}
         </div>
 
         <div class="section-header">Education & Certifications</div>

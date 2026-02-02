@@ -48,7 +48,21 @@ class TriageEngine(BaseAgent):
 
     def generate_cover_letter_prompt(self, job_title, company, jd):
         """Generates a prompt for the sub-agent to write a tailored cover letter."""
-        profile = self.profile_data
+        profile = self.profile_data.get('profile', self.profile_data.get('personal_info', {}))
+        experiences = self.profile_data.get('experiences', self.profile_data.get('experience', []))
+        skills = self.profile_data.get('skills', [])
+        
+        # Extract projects for deeper tailoring if available
+        all_projects = []
+        for exp in experiences:
+            all_projects.extend(exp.get('projects', []))
+
+        # Format skills for prompt
+        if skills and isinstance(skills[0], dict):
+            skill_names = [s['name'] for s in skills]
+        else:
+            skill_names = skills
+
         prompt = f"""
 Write a professional, highly tailored cover letter for the following job application.
 The letter should be concise (max 300 words), highlight matching skills, and sound enthusiastic but benevolent (Vision-like tone).
@@ -59,13 +73,14 @@ Title: {job_title}
 Job Description: {jd[:2000]}
 
 ### CANDIDATE PROFILE
-Name: {profile['personal_info']['first_name']} {profile['personal_info']['last_name']}
-Current Role: {profile['experience'][0]['title']} at {profile['experience'][0]['company']}
-Key Skills: {', '.join(profile['skills'])}
-Top Achievement: {profile['experience'][0]['description'][:500]}
+Name: {profile.get('name', f"{profile.get('first_name', '')} {profile.get('last_name', '')}")}
+Current Role: {experiences[0].get('position', experiences[0].get('title', ''))} at {experiences[0].get('company', '')}
+Key Skills: {', '.join(skill_names[:15])}
+Relevant Projects: {json.dumps(all_projects[:5], indent=2)}
 
 ### INSTRUCTIONS
 - Address it to "Hiring Manager" or the specific company.
+- Select the 2 most relevant projects from the list above that match the job description.
 - Focus on how the candidate's background in platform engineering and leadership solves the company's specific needs.
 - Return ONLY the text of the cover letter.
 """

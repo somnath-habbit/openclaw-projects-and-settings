@@ -1,85 +1,778 @@
 {
-  "personal_info": {
-    "first_name": "Somnath",
-    "last_name": "Ghosh",
+  "profile": {
+    "name": "Somnath Ghosh",
+    "title": "Engineering Manager | Certified SAFe 6.0 Scrum Master",
+    "bio": "Seasoned Software Engineering Manager with 10+ years of experience in the IT industry. Skilled in orchestrating business initiatives and projects, identifying customer and operational requirements, crafting strategic plans, and overcoming performance impediments. Adept at building and leading high-performing engineering teams from scratch, driving infrastructure modernization, and delivering measurable business impact. Expert in cloud architecture (AWS/GCP), microservices, and fostering collaborative engineering cultures. Passionate about AI integration and platform transformation.",
     "email": "somnath.ghosh2010@gmail.com",
     "phone": "+91 9232661324",
-    "linkedin_url": "https://www.linkedin.com/in/somnathghosh007/",
-    "location": "Bengaluru, Karnataka, India",
-    "headline": "Engineering Manager @ Clarivate | Platform & Modernization | AI Augmented Systems"
+    "location": "Bangalore, India",
+    "avatarUrl": "/profile-img.jpg",
+    "resumeUrl": "/resume.pdf",
+    "languages": [
+      "English",
+      "Hindi",
+      "Bengali"
+    ],
+    "interests": [
+      "AI/ML",
+      "Cloud Architecture",
+      "Traveling",
+      "Painting",
+      "Teaching",
+      "Gaming"
+    ]
   },
-  "experience": [
+  "socials": [
     {
-      "title": "Associate Manager, Software Engineering",
-      "company": "Clarivate Analytics",
-      "location": "Bengaluru, India",
-      "start_date": "Apr 2023",
-      "end_date": "Present",
-      "description": "Lead the Alexander Street Back-Office platform (8+ apps). Built India engineering team from scratch (closed 5 roles in 3 months). Reduced critical production incidents by 83% via observability (Datadog) and service ownership. Increased sprint velocity from 12 to 29 SP. Led migration from RabbitMQ to SQS. Leading AI-agent validation workflow design."
+      "platform": "LinkedIn",
+      "url": "https://linkedin.com/in/somnathghosh007",
+      "username": "somnathghosh007"
     },
     {
-      "title": "Engineering Manager",
-      "company": "Trica (Let’s Venture)",
-      "location": "Bengaluru, India",
-      "start_date": "Jul 2022",
-      "end_date": "Mar 2023",
-      "description": "Managed 31 engineers across 3 squads for a B2B SaaS platform (900+ enterprise customers). Led microservices (AWS ECS/Fargate) and micro-frontend (bit.dev) adoption. Implemented multi-cluster MongoDB Atlas architecture."
+      "platform": "GitHub",
+      "url": "https://github.com/somnath-habbit",
+      "username": "somnath-habbit"
     },
     {
-      "title": "Senior Engineering Management Specialist",
-      "company": "Hashedin by Deloitte",
-      "location": "Bengaluru, India",
-      "start_date": "Jul 2019",
-      "end_date": "Jul 2022",
-      "description": "Led delivery teams of 25+ engineers. Career advisor for 30+ professionals. Projects: Krish-e (Hybrid Cloud AWS/GCP), Pidilite Field Manager (Unified Backend), Healthcare VMS (Serverless Lambda)."
-    },
-    {
-      "title": "Senior Software Developer",
-      "company": "Healthplix Technologies",
-      "location": "Bengaluru, India",
-      "start_date": "Sep 2018",
-      "end_date": "Jul 2019",
-      "description": "Introduced Node.js and MongoDB. Built Spark-based data pipelines (MySQL to MongoDB). Contributed to applied ML recommendation systems."
-    },
-    {
-      "title": "Software Engineer -> Senior Engineer",
-      "company": "Nreach Online Services (Xoxoday)",
-      "location": "Bengaluru, India",
-      "start_date": "Sep 2015",
-      "end_date": "Sep 2018",
-      "description": "Progressed to Technical Lead managing 5 engineers. Led migration from monolith to microservices."
+      "platform": "Email",
+      "url": "mailto:somnath.ghosh2010@gmail.com",
+      "username": "somnath.ghosh2010@gmail.com"
     }
   ],
   "education": [
     {
-      "school": "Calcutta Institute of Technology",
-      "degree": "Bachelor of Technology (B.Tech.), Computer Science",
-      "start_date": "2011",
-      "end_date": "2015"
+      "id": "edu-1",
+      "degree": "B.Tech CSE",
+      "institution": "Calcutta Institute of Technology (WBUT)",
+      "location": "Kolkata, West Bengal, India",
+      "startDate": "2011-06",
+      "endDate": "2015-06"
     }
-  ],
-  "skills": [
-    "Engineering Management",
-    "Team Building",
-    "Microservices",
-    "Event-Driven Architecture",
-    "AWS (Lambda, ECS, Fargate, S3, RDS, SQS)",
-    "GCP (Pub/Sub, GKE)",
-    "System Design",
-    "Python (Django, Flask)",
-    "Node.js",
-    "SQL (MySQL, PostgreSQL)",
-    "NoSQL (MongoDB, Redis)",
-    "AI-Augmented Engineering",
-    "Applied LLMs",
-    "Agile & SAFe 6.0",
-    "Observability (Datadog)"
   ],
   "certifications": [
     {
-      "name": "Certified SAFe® 6 Scrum Master",
-      "issuer": "Scaled Agile Inc",
+      "id": "cert-1",
+      "name": "SAFe 6.0 Certified Scrum Master",
+      "issuer": "Scaled Agile",
       "date": "2025"
     }
-  ]
+  ],
+  "experiences": [
+    {
+      "id": "exp-clarivate",
+      "position": "Associate Manager, Software Engineering",
+      "company": "Clarivate Analytics",
+      "companyDescription": "A publicly traded global innovator, driving insights with cutting-edge data, research, and analytics solutions.",
+      "location": "Bangalore, Karnataka, India",
+      "startDate": "2023-04",
+      "endDate": "Present",
+      "description": [
+        "Leading the Alexander Street Back-Office team managing 8+ applications under ProQuest for content automation, metadata management, CDN operations, and video processing.",
+        "Built India team from scratch within first 3 months, successfully closing 5 roles (2 Senior QA, 2 QA, 1 Developer) for 2026.",
+        "Delivered 34 projects in 2025 spanning infrastructure modernization, platform re-architecture, monitoring, automation, and database optimization.",
+        "Reduced critical incidents by 83% (from every 15 days to once per quarter) through quality culture and process improvements.",
+        "Increased team velocity from 12-13 to 21-29 story points per sprint (62-123% improvement) through Scrum process improvements.",
+        "Established service ownership model with primary/secondary owners for Mambo, CA, CDN, MUCO systems.",
+        "Created comprehensive 2026 technology roadmap with quarterly breakdown aligned with organizational priorities."
+      ],
+      "achievements": [
+        "83% reduction in critical incidents",
+        "66 GB database storage optimization (163.3 GB → 97.6 GB)",
+        "Issue detection improved from 3 weeks to 2-3 days",
+        "Team velocity improved 62-123%",
+        "Successfully hired 5 roles within 3 months",
+        "Zero customer-experience-breaking incidents",
+        "100% infrastructure upgrades with zero downtime"
+      ],
+      "skills": [
+        "AWS",
+        "Python",
+        "Django",
+        "Node.js",
+        "React",
+        ".NET Core",
+        "PHP",
+        "MySQL",
+        "PostgreSQL",
+        "AWS Lambda",
+        "AWS SAM",
+        "CloudFormation",
+        "DataDog",
+        "SQS",
+        "RabbitMQ",
+        "Docker",
+        "ECS",
+        "Agile/Scrum",
+        "Team Leadership"
+      ],
+      "projects": [
+        {
+          "name": "CA (Content Automation Pipeline)",
+          "description": "Automated pipeline for content ingestion and management. Core system for AS backoffice operations.",
+          "impact": "Foundation for all content processing workflows",
+          "category": "Content Management"
+        },
+        {
+          "name": "RabbitMQ to SQS Migration (CA Re-Architecture)",
+          "description": "Major architectural transformation for Content Automation system. Implemented SQS as parallel broker with Celery compatibility. Completed August 2025.",
+          "impact": "Eliminated bi-monthly build queue failures. Zero SQS-related incidents post-migration.",
+          "category": "Platform Transformation"
+        },
+        {
+          "name": "DataDog Monitoring Implementation",
+          "description": "Comprehensive monitoring across CA, DMC, and Mambo systems. Early bug detection and system reliability enhancement.",
+          "impact": "Reduced issue detection time from 3 weeks to 2-3 days. Proactive issue resolution within same sprint.",
+          "category": "Observability"
+        },
+        {
+          "name": "Database Optimization (Mambo & MUCO)",
+          "description": "Mambo and MUCO database archival initiatives. Cleanup of logs and optimization of slow-running queries.",
+          "impact": "66 GB storage reduction (163.3 GB → 97.6 GB). Drastic reduction of downtime by 50-60%. Improved query performance and reduced storage costs.",
+          "category": "Database"
+        },
+        {
+          "name": "MySQL 5.x to 8.x Migration",
+          "description": "Complete database migration from MySQL 5.x to 8.x across all AS products. Completed Jan-Feb 2025.",
+          "impact": "Zero unscheduled downtime. Enhanced database performance, security, and end-of-life support.",
+          "category": "Infrastructure Modernization"
+        },
+        {
+          "name": "Apache Version Upgrade",
+          "description": "Apache web server upgrade across all systems.",
+          "impact": "Completed without issues in short timeframe. Zero downtime.",
+          "category": "Infrastructure Modernization"
+        },
+        {
+          "name": "Lambda Runtime Upgrades",
+          "description": "Upgraded Lambda functions from Python 3.7/3.9 to 3.12, Node.js to 20/22 across multiple services (CDN, Mind, MucoSync).",
+          "impact": "100% success rate. Zero downtime during upgrades.",
+          "category": "Infrastructure Modernization"
+        },
+        {
+          "name": "Video Chapterization (AnyClip Integration)",
+          "description": "End-to-end video processing pipeline with third-party AnyClip integration. Complex integration involving modernized AWS Lambda architecture and legacy system challenges. Completed July 2025.",
+          "impact": "Processing 2-3 videos daily for Content team. Major customer-focused innovation.",
+          "category": "Video Processing"
+        },
+        {
+          "name": "JWPlayer to VideoJS Replacement",
+          "description": "Replaced deprecated JWPlayer license with VideoJS for streaming video content.",
+          "impact": "Supported license expiry and product enhancement.",
+          "category": "Video Processing"
+        },
+        {
+          "name": "PQP Content Copy Project",
+          "description": "Critical unplanned project addressing UMG metadata delivery gap. Content not updated since 2023. Created from scratch to remove PQP blocker.",
+          "impact": "Resolved major content delivery blocker.",
+          "category": "Content Management"
+        },
+        {
+          "name": "Notification System",
+          "description": "System for errors and warnings notification in ingestion process. Improves error handling and customer experience.",
+          "impact": "Expedited error debugging. Improved system performance and reduced downtime.",
+          "category": "Observability"
+        },
+        {
+          "name": "SQUID Report Automation",
+          "description": "Automated SQUID Audio and ASCAP report generation.",
+          "impact": "Eliminated 2-3 monthly manual reporting tickets. Better resource allocation.",
+          "category": "Automation"
+        },
+        {
+          "name": "Royalty Reports Automation",
+          "description": "Automated royalty report generation for financial tracking.",
+          "impact": "Delivered on time. Supporting accurate financial tracking.",
+          "category": "Automation"
+        },
+        {
+          "name": "DORP & DMC (Content Management Systems)",
+          "description": "Systems for organizing and maintaining content. DORP to Mambo push pipeline with major breakdown fix and architecture changes.",
+          "impact": "Drastic reduction of downtime by 40-50%.",
+          "category": "Content Management"
+        },
+        {
+          "name": "MAMBO & MUCO (Metadata Management)",
+          "description": "Tools for managing metadata associated with content. Performance improvements addressing slow-running queries.",
+          "impact": "Major performance improvement and reduced downtime.",
+          "category": "Content Management"
+        },
+        {
+          "name": "CACOON XSLT Pipeline",
+          "description": "Transforming and processing XML data for content workflows.",
+          "impact": "Core XML processing capability.",
+          "category": "Content Management"
+        },
+        {
+          "name": "MUTANT Service",
+          "description": "System for handling various backend tasks efficiently. Transition to Platform team for architecture fixes.",
+          "impact": "Backend task automation and efficiency.",
+          "category": "Backend Services"
+        },
+        {
+          "name": "CDN Management Pipeline",
+          "description": "Content delivery optimization and CDN management.",
+          "impact": "Ensuring content delivery optimization.",
+          "category": "Infrastructure"
+        },
+        {
+          "name": "VCLD (Video Content Loading and Distribution)",
+          "description": "Managing video content loading and distribution across platforms.",
+          "impact": "Streamlined video content delivery.",
+          "category": "Video Processing"
+        },
+        {
+          "name": "LIB (Library System)",
+          "description": "System for organizing and categorizing content resources.",
+          "impact": "Content resource organization.",
+          "category": "Content Management"
+        },
+        {
+          "name": "LIBI Validation Enhancement",
+          "description": "Pre-filtering to block invalid vendor m3u8 files.",
+          "impact": "Reduced ingestion failures and reprocessing needs.",
+          "category": "Content Management"
+        },
+        {
+          "name": "De-duplication Enhancement",
+          "description": "Enhanced deduplication logic at Mambo layer.",
+          "impact": "Reduced system load and improved throughput.",
+          "category": "Performance"
+        },
+        {
+          "name": "CI/CD Migration",
+          "description": "CI/CD migration for CDN/Mind/MUCOSync and CA/Mambo systems. 90% complete by mid-2025.",
+          "impact": "Modernized deployment pipeline.",
+          "category": "DevOps"
+        },
+        {
+          "name": "Mambo PHP Upgrade (Rector)",
+          "description": "PHP version upgrade using Rector for automated code transformation.",
+          "impact": "Code modernization and maintainability.",
+          "category": "Infrastructure Modernization"
+        },
+        {
+          "name": "Graylog to CloudWatch Migration",
+          "description": "Log management migration from Graylog to AWS CloudWatch.",
+          "impact": "Unified AWS logging infrastructure.",
+          "category": "Observability"
+        },
+        {
+          "name": "Solr Upgrade",
+          "description": "Search infrastructure upgrade plan and implementation.",
+          "impact": "Enhanced search capabilities.",
+          "category": "Infrastructure Modernization"
+        },
+        {
+          "name": "Centralized Logging System",
+          "description": "Building centralized logging system across all backoffice products.",
+          "impact": "Unified observability and debugging.",
+          "category": "Observability"
+        },
+        {
+          "name": "HARP/LINC HTML Injection Fix",
+          "description": "Security improvement addressing HTML injection vulnerabilities.",
+          "impact": "Security enhancement and customer delight.",
+          "category": "Security"
+        },
+        {
+          "name": "HARP IP Updates Automation",
+          "description": "Partial automation of HARP IP update processes.",
+          "impact": "Faster delivery and better resource allocation.",
+          "category": "Automation"
+        },
+        {
+          "name": "AWS Aurora Post Migration",
+          "description": "Post-migration activities and stabilization after Aurora migration.",
+          "impact": "End of life support addressed.",
+          "category": "Infrastructure"
+        },
+        {
+          "name": "Mambo Synchronizer Fix",
+          "description": "Fixed failures and added custom sync feature for Mambo synchronizer.",
+          "impact": "Improved synchronization processes. Reduced downtime.",
+          "category": "Backend Services"
+        },
+        {
+          "name": "AS CMS Consolidation Plan",
+          "description": "Strategic architecture roadmap for consolidating multiple AS Content Management Systems. Drafted within 4 months of joining.",
+          "impact": "Long-term architectural vision for AS products.",
+          "category": "Architecture"
+        },
+        {
+          "name": "Waveform Generation Feature",
+          "description": "Audio waveform generation for media content.",
+          "impact": "Enhanced media processing capabilities.",
+          "category": "Video Processing"
+        },
+        {
+          "name": "DRM Adoptability",
+          "description": "Digital Rights Management implementation for content protection.",
+          "impact": "Enhanced content security.",
+          "category": "Security"
+        }
+      ]
+    },
+    {
+      "id": "exp-trica",
+      "position": "Engineering Manager",
+      "company": "Trica | Let's Venture",
+      "companyDescription": "A SaaS platform for equity management (ESOPs/SAR/RSU) and CAP Table management for 900+ customers.",
+      "location": "Bangalore, Karnataka, India",
+      "startDate": "2022-07",
+      "endDate": "2023-03",
+      "description": [
+        "Led development of a SaaS product for 900+ customers with scalable micro-service architecture on AWS.",
+        "Managed cross-functional team of 31 developers, QA engineers, and designers across 3 parallel teams with 3 tech leads.",
+        "Implemented micro-frontend using bit.dev components for modularity and reusability.",
+        "Deployed backend as Docker images on AWS ECR with ECS Fargate serverless instances.",
+        "Managed performance appraisals and gracefully handled cost-cutting initiatives.",
+        "System architecture redesign to introduce full micro-service architecture."
+      ],
+      "achievements": [
+        "Successfully served 900+ customers",
+        "Built micro-service architecture from scratch",
+        "Managed team of 31+ resources across 3 parallel teams"
+      ],
+      "skills": [
+        "MERN Stack",
+        "Node.js",
+        "Express",
+        "React",
+        "MongoDB",
+        "Docker",
+        "AWS ECS",
+        "AWS Fargate",
+        "AWS Cognito",
+        "AWS Lambda",
+        "AWS S3",
+        "AWS SES",
+        "AWS SNS",
+        "AWS SQS",
+        "AWS WAF",
+        "AWS CloudWatch",
+        "AWS Route53",
+        "AWS VPC",
+        "AWS Cloudfront",
+        "AWS Elastic Load Balancing",
+        "Micro-services",
+        "Micro-frontend",
+        "bit.dev"
+      ],
+      "projects": [
+        {
+          "name": "Trica Equity Platform",
+          "description": "SaaS product for company admins to manage Equity (ESOPs/SAR/RSU) and CAP Table for shareholders. Built using MERN Stack with micro-frontend (bit.dev) and micro-service backend deployed on AWS ECS/Fargate. Database on MongoDB Atlas with multi-cluster node Master-Slave architecture.",
+          "impact": "Serving 900+ customers with scalable enterprise solution.",
+          "category": "Full Product"
+        }
+      ]
+    },
+    {
+      "id": "exp-hashedin",
+      "position": "Senior Engineering Management Specialist",
+      "company": "Hashedin by Deloitte",
+      "companyDescription": "A Deloitte company specializing in building digital solutions for global enterprises.",
+      "location": "Bangalore, Karnataka, India",
+      "startDate": "2019-07",
+      "endDate": "2022-07",
+      "description": [
+        "Led teams of up to 25+ resources building, deploying, and managing multiple enterprise projects from scratch.",
+        "Mentored 30+ professionals as Career Advisor within the organization.",
+        "Handled 6+ appraisal cycles in 3 years.",
+        "Earned 3 Spot Awards for leadership and performance during service.",
+        "Worked effectively in fast-paced environments demonstrating leadership from concept to completion."
+      ],
+      "achievements": [
+        "Certificate of Appreciation for Leadership (Pidilite project) - Oct 2020",
+        "Certificate of Appreciation for Leadership Principle (Press9 project) - Sep 2019",
+        "3 Spot Awards for leadership and performance",
+        "Mentored 30+ people as Career Advisor",
+        "Handled 6+ appraisal cycles"
+      ],
+      "skills": [
+        "Python",
+        "Django",
+        "Node.js",
+        "Express",
+        "React",
+        "React Native",
+        "Redux",
+        "PostgreSQL",
+        "AWS",
+        "GCP",
+        "Serverless Framework",
+        "Docker",
+        "Redis",
+        "Celery",
+        "Nginx",
+        "Gunicorn",
+        "PHP",
+        "SQL",
+        "Heroku Connect",
+        "Salesforce"
+      ],
+      "projects": [
+        {
+          "name": "Stem Cell Treatment Vendor Management (Deloitte In-house)",
+          "description": "POC SaaS product for US hospitals specializing in alternative medicine therapy (Stem Cell Alternation Treatment). True Lambda-based Serverless Micro-Service application with multiple user levels and robust ACL. Built using Serverless Framework with Node.js as primary language and Python for specific functionalities. Communication via RPC protocol. Frontend with React and Context API. Database on PostgreSQL with multiple clusters and nodes. Caching layer on AWS ElastiCache for Redis.",
+          "impact": "Successfully delivered POC with enterprise-grade architecture.",
+          "teamSize": 12,
+          "category": "Healthcare SaaS"
+        },
+        {
+          "name": "Pidilite's Field Manager",
+          "description": "Comprehensive SaaS solution for field agents supporting large and small clients for sales and support operations managed by agent managers and admins. Multiple layers with large team. Multiple mobile and web applications (2 web apps, multiple mobile apps) with single connected backend. Technologies: React Native, React.js, Redux, Node.js, Express.js, Python, Django, PHP, SQL, Heroku Connect, and Salesforce integration.",
+          "impact": "Received Certificate of Appreciation for Leadership.",
+          "teamSize": 25,
+          "category": "Field Management SaaS"
+        },
+        {
+          "name": "Krish-e | Trringo (Mahindra & Mahindra)",
+          "description": "SaaS platform for Indian farmers for lending farming equipment, vehicles, and attachments. Two main user groups: larger farmers as vendors and smaller farmers as customers. Built with Python 3, Django 3.1, PostgreSQL, Gunicorn, Celery, Nginx, Docker, React.js, and GCP pub/sub. Hybrid AWS/GCP deployment for optimal performance and scalability.",
+          "impact": "Successfully served farmer community with innovative lending platform.",
+          "teamSize": 9,
+          "category": "AgriTech SaaS"
+        }
+      ]
+    },
+    {
+      "id": "exp-healthplix",
+      "position": "Senior Software Developer",
+      "company": "Healthplix Technologies Pvt. Ltd.",
+      "companyDescription": "Healthcare technology company trusted by physicians across 12+ states, specializing in Diabetology, Cardiology, Oncology etc. Used by physicians at point-of-care during consultation.",
+      "location": "Bangalore, Karnataka, India",
+      "startDate": "2018-09",
+      "endDate": "2019-07",
+      "description": [
+        "Restructured application to Micro-Kernel Architecture by converting use-cases to widgets.",
+        "Built Cancer Staging and Oncology modules with jQuery widget factory and D3.",
+        "Introduced Node.js and MongoDB tech stack to the organization.",
+        "Developed Healthplix Data Extractor using Python Spark, MongoDB, and AWS Sagemaker.",
+        "Built R/x Recommendation Engine using machine learning with prescription and diagnosis data.",
+        "Trained new developers and programmers on company standards for design and review."
+      ],
+      "achievements": [
+        "Developed ML-powered R/x Recommendation Engine",
+        "Successfully restructured architecture to Micro-Kernel",
+        "Introduced modern tech stack (Node.js, MongoDB)"
+      ],
+      "skills": [
+        "Python",
+        "Spark",
+        "MongoDB",
+        "MySQL",
+        "AWS Sagemaker",
+        "Node.js",
+        "jQuery",
+        "D3.js",
+        "Machine Learning",
+        "OCR"
+      ],
+      "projects": [
+        {
+          "name": "Healthplix Data Extractor",
+          "description": "Data extraction pipeline powered by Python Spark that extracts data from MySQL, transforms it, and stores in MongoDB. Automates data extraction ensuring accuracy and saving time and resources.",
+          "impact": "Automated data extraction pipeline for healthcare data.",
+          "category": "Data Engineering"
+        },
+        {
+          "name": "R/x Recommendation Engine",
+          "description": "Recommendation engine using AWS Sagemaker trained on datasets from prescription and diagnosis data. Data collected manually through OCR and from the application for diverse dataset. Integration of Python Spark, MongoDB, and AWS Sagemaker for scalable solution.",
+          "impact": "Enhanced decision-making and patient care in healthcare through ML recommendations.",
+          "category": "Machine Learning"
+        },
+        {
+          "name": "Cancer Staging & Oncology Modules",
+          "description": "Built Cancer Staging and Oncology modules using jQuery widget factory and D3 for data visualization.",
+          "impact": "Enhanced physician workflow for oncology consultations.",
+          "category": "Healthcare Product"
+        },
+        {
+          "name": "Micro-Kernel Architecture Restructuring",
+          "description": "Restructured entire application to Micro-Kernel Architecture by converting various use-cases to widgets for modularity.",
+          "impact": "Improved code maintainability and modularity.",
+          "category": "Architecture"
+        }
+      ]
+    },
+    {
+      "id": "exp-xoxoday",
+      "position": "Software Engineer → Senior Software Engineer",
+      "company": "Nreach Online Services (Xoxoday)",
+      "companyDescription": "Experiential gifting platform specializing in corporate gifts, rewards and recognitions. Working with 1000+ clients globally across India, Singapore, US, Middle East, and UK.",
+      "location": "Bangalore, Karnataka, India",
+      "startDate": "2015-09",
+      "endDate": "2018-09",
+      "description": [
+        "Built the application from scratch with core team of 4 members within 5 months of starting career.",
+        "Led architectural transformation from monolithic to MVC to HMVC to Micro-Service architecture.",
+        "Worked on 50+ modules with various features.",
+        "Trained 6+ developers, mentored 8+ interns, and managed team of 5+ members.",
+        "Built entire budgeting module with NodeJs, MySQL, and GraphQL within 3 weeks with team of 2.",
+        "Awarded Employee of the Month and for maintaining best coding practice.",
+        "Started as developer and advanced to lead position, initiating Micro-Service migration as strategic initiative."
+      ],
+      "achievements": [
+        "Shining Star Award - Mar 2017",
+        "Employee of the Month",
+        "Built application from scratch in 5 months",
+        "Led architectural evolution through 4 phases (Monolith → MVC → HMVC → Microservices)"
+      ],
+      "skills": [
+        "PHP",
+        "PHP7",
+        "MySQL",
+        "CouchDB",
+        "Node.js",
+        "Express",
+        "React",
+        "Vue.js",
+        "GraphQL",
+        "Python",
+        "Micro-services",
+        "Git",
+        "Linux",
+        "JavaScript"
+      ],
+      "projects": [
+        {
+          "name": "Xoxoday Enterprise Platform",
+          "description": "SaaS application for companies and HRs to provide corporate gifts, rewards, and recognitions using point-based system with internal e-commerce product and service segment. Led architectural transformation from monolith → MVC → HMVC → Micro-Service for enhanced scalability and efficiency. Technologies: PHP, MySQL, CouchDB, Python, Node.js, Express, React.",
+          "impact": "Served 1000+ global clients. Started as developer, advanced to lead managing 5-member team.",
+          "category": "Full Product"
+        },
+        {
+          "name": "Campaign Management Module",
+          "description": "Side project developed using Node.js, CouchDB, and React.js. Interacted with various channel partners for reiterating requirements.",
+          "impact": "Led team of 3 developers, met deadlines consistently.",
+          "category": "Marketing Automation"
+        },
+        {
+          "name": "Templating Module",
+          "description": "Templating engine for dynamically generating email templates for clients and managers. Later redesigned for SMS templating to be implemented as Microservice.",
+          "impact": "Enhanced client communication automation. Evolution from email to multi-channel.",
+          "category": "Communication Platform"
+        },
+        {
+          "name": "Budgeting Module",
+          "description": "Complete budgeting module built with Node.js, MySQL, and GraphQL within 3 weeks with team of 2.",
+          "impact": "Rapid delivery demonstrating full-stack capabilities.",
+          "category": "Finance Module"
+        }
+      ]
+    }
+  ],
+  "personalProjects": [
+    {
+      "id": "proj-ewise",
+      "name": "eWise Academy",
+      "description": "Co-Founded an offline coaching academy in Kolkata. Managed more than 15+ teachers and 50+ students. Later (2017) rebuilt as virtualization experience using Vue.js, Node.js, and WebRTC for communication medium.",
+      "period": "2014-2017",
+      "technologies": [
+        "Vue.js",
+        "Node.js",
+        "WebRTC"
+      ],
+      "category": "EdTech Startup"
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-eng-mgmt",
+      "name": "Engineering Management",
+      "category": "Leadership",
+      "description": "Team building (up to 31 resources), hiring, performance management, mentoring 30+ professionals, appraisal cycles, strategic planning.",
+      "rating": 5
+    },
+    {
+      "id": "skill-agile",
+      "name": "Agile/Scrum (SAFe Certified)",
+      "category": "Leadership",
+      "description": "Sprint planning, retrospectives, backlog management, Agile poker estimation, process improvement. Improved team velocity 62-123%.",
+      "rating": 5
+    },
+    {
+      "id": "skill-python",
+      "name": "Python",
+      "category": "Programming Languages",
+      "description": "Django, Flask, Celery, Spark, Lambda functions, data processing.",
+      "rating": 5
+    },
+    {
+      "id": "skill-nodejs",
+      "name": "Node.js",
+      "category": "Programming Languages",
+      "description": "Express.js, Serverless Framework, REST APIs, GraphQL.",
+      "rating": 5
+    },
+    {
+      "id": "skill-typescript",
+      "name": "TypeScript",
+      "category": "Programming Languages",
+      "description": "Modern TypeScript with React and Node.js.",
+      "rating": 4
+    },
+    {
+      "id": "skill-react",
+      "name": "React.js",
+      "category": "Frontend",
+      "description": "React, Redux, Context API, micro-frontends (bit.dev), React Native.",
+      "rating": 5
+    },
+    {
+      "id": "skill-aws",
+      "name": "AWS",
+      "category": "Cloud & Infrastructure",
+      "description": "Lambda, ECS, Fargate, S3, SQS, SNS, CloudFormation, SAM, RDS, ElastiCache, CloudWatch, Route53, WAF, Cognito, VPC, Aurora, CloudFront, Elastic Load Balancing.",
+      "rating": 5
+    },
+    {
+      "id": "skill-gcp",
+      "name": "Google Cloud Platform",
+      "category": "Cloud & Infrastructure",
+      "description": "Pub/Sub, Cloud Functions, GKE.",
+      "rating": 3
+    },
+    {
+      "id": "skill-azure",
+      "name": "Azure",
+      "category": "Cloud & Infrastructure",
+      "description": "Basic Azure services familiarity.",
+      "rating": 2
+    },
+    {
+      "id": "skill-docker",
+      "name": "Docker & Containerization",
+      "category": "DevOps",
+      "description": "Docker, AWS ECR, ECS, container orchestration.",
+      "rating": 4
+    },
+    {
+      "id": "skill-microservices",
+      "name": "Microservices Architecture",
+      "category": "Architecture",
+      "description": "Design and implementation of scalable microservice systems. Led 4-phase architectural evolution at Xoxoday.",
+      "rating": 5
+    },
+    {
+      "id": "skill-system-design",
+      "name": "System Design",
+      "category": "Architecture",
+      "description": "Large-scale distributed systems, event-driven architecture, database optimization, service mesh architecture.",
+      "rating": 5
+    },
+    {
+      "id": "skill-sql",
+      "name": "SQL Databases",
+      "category": "Databases",
+      "description": "MySQL, PostgreSQL, query optimization, migrations (5.x to 8.x).",
+      "rating": 5
+    },
+    {
+      "id": "skill-nosql",
+      "name": "NoSQL Databases",
+      "category": "Databases",
+      "description": "MongoDB (Atlas multi-cluster), CouchDB.",
+      "rating": 4
+    },
+    {
+      "id": "skill-redis",
+      "name": "Redis & Caching",
+      "category": "Databases",
+      "description": "ElastiCache, Redis, caching strategies.",
+      "rating": 4
+    },
+    {
+      "id": "skill-rabbitmq",
+      "name": "Message Queues",
+      "category": "Infrastructure",
+      "description": "RabbitMQ, SQS, Celery, event-based architecture. Led RabbitMQ to SQS migration.",
+      "rating": 5
+    },
+    {
+      "id": "skill-cicd",
+      "name": "CI/CD",
+      "category": "DevOps",
+      "description": "GitHub Actions, deployment automation, release management.",
+      "rating": 4
+    },
+    {
+      "id": "skill-monitoring",
+      "name": "Monitoring & Observability",
+      "category": "DevOps",
+      "description": "DataDog, CloudWatch, Graylog, alerting, log management.",
+      "rating": 5
+    },
+    {
+      "id": "skill-ml",
+      "name": "Machine Learning",
+      "category": "AI/ML",
+      "description": "AWS Sagemaker, recommendation engines, data processing with Spark.",
+      "rating": 3
+    },
+    {
+      "id": "skill-ai-tools",
+      "name": "AI Tools Integration",
+      "category": "AI/ML",
+      "description": "MCP (Model Context Protocol), AI-assisted development workflows.",
+      "rating": 3
+    },
+    {
+      "id": "skill-php",
+      "name": "PHP",
+      "category": "Programming Languages",
+      "description": "PHP 7, legacy PHP systems, Rector-based upgrades.",
+      "rating": 4
+    },
+    {
+      "id": "skill-dotnet",
+      "name": ".NET Core",
+      "category": "Programming Languages",
+      "description": "C#, .NET Core frameworks (intermediate).",
+      "rating": 3
+    }
+  ],
+  "awards": [
+    {
+      "id": "award-1",
+      "title": "Certificate of Appreciation for Leadership",
+      "date": "2020-10",
+      "organization": "Hashedin by Deloitte",
+      "description": "Received for Pidilite project leadership"
+    },
+    {
+      "id": "award-2",
+      "title": "Certificate of Appreciation for Leadership Principle",
+      "date": "2019-09",
+      "organization": "Hashedin by Deloitte",
+      "description": "Received for Press9 Project"
+    },
+    {
+      "id": "award-3",
+      "title": "Shining Star Award",
+      "date": "2017-03",
+      "organization": "Xoxoday",
+      "description": "Recognition for outstanding performance"
+    },
+    {
+      "id": "award-4",
+      "title": "Employee of the Month",
+      "date": "2016",
+      "organization": "Xoxoday",
+      "description": "Recognition for maintaining best coding practices"
+    }
+  ],
+  "careerAspirations": {
+    "shortTerm": "Progress to Senior Engineering Manager, taking on broader scope and leading larger, more complex initiatives. Continue strengthening team delivery, process maturity, and cross-functional collaboration while driving infrastructure modernization and platform transformation projects.",
+    "longTerm": "Transition into AI-focused engineering leadership, combining management experience with deep technical expertise in AI/ML systems. Interested in roles that blend innovation with execution—exploring how AI can transform content management, automation, and operational workflows."
+  },
+  "keyMetrics": {
+    "yearsExperience": "12+",
+    "totalTeamManaged": "31+",
+    "projectsDelivered": "50+",
+    "mentees": "30+",
+    "incidentReduction": "83%",
+    "velocityImprovement": "62-123%",
+    "databaseOptimization": "66 GB"
+  }
 }

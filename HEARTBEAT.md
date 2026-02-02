@@ -1,4 +1,4 @@
 # HEARTBEAT.md
 
-# Keep this file empty (or with only comments) to skip heartbeat API calls.
-# Add tasks below when you want the agent to check something periodically.
+# Auto-check for pending cover letters every heartbeat
+Check for jobs with status PENDING_GENERATION in /home/somnath/.openclaw/workspace/Auto_job_application/data/autobot.db and process them.
