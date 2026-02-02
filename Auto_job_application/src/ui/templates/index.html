@@ -47,7 +47,10 @@
                                 <span class="badge rounded-pill bg-info text-dark">{{ job.status }}</span>
                             </td>
                             <td>
-                                <a href="{{ url_for('edit_job', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">Edit / View</a>
+                                <div class="btn-group">
+                                    <a href="{{ url_for('edit_job', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">Edit Job</a>
+                                    <a href="{{ url_for('resume_preview', job_id=job.id) }}" class="btn btn-sm btn-outline-success">Preview Resume</a>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
