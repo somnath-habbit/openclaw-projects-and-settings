@@ -48,17 +48,13 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - `trash` > `rm` (recoverable beats gone forever)
 - When in doubt, ask.
 
-## External vs Internal
+## Periodic Version Control
 
-**Safe to do freely:**
-- Read files, explore, organize, learn
-- Search the web, check calendars
-- Work within this workspace
-
-**Ask first:**
-- Sending emails, tweets, public posts
-- Anything that leaves the machine
-- Anything you're uncertain about
+Maintain the `openclaw-projects-and-settings` repository:
+- **Frequency:** Every time a significant new feature or refactor is completed.
+- **Content:** Push code, settings (`IDENTITY.md`, `SOUL.md`, etc.), and non-sensitive documentation.
+- **Exclusions:** Never push `.db` files, raw browser snapshots, or API keys.
+- **Branch:** `master`
 
 ## Group Chats
 
