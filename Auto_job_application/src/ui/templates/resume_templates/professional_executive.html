@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professional Resume - {{ profile.personal_info.first_name }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        @page { size: A4; margin: 0; }
+        body { background-color: #f0f2f5; font-family: 'Calibri', 'Arial', sans-serif; color: #333; }
+        .no-print { background: #343a40; padding: 15px; text-align: center; color: white; position: sticky; top: 0; z-index: 1000; }
+        
+        .resume-container {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 15mm 20mm;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+        }
+
+        .header { margin-bottom: 25px; border-bottom: 3px solid #1a3a5f; padding-bottom: 15px; }
+        .name { font-size: 32pt; font-weight: 800; color: #1a3a5f; letter-spacing: -1px; line-height: 1; }
+        .title-line { font-size: 16pt; color: #444; margin-top: 5px; font-weight: 600; }
+        .contact-info { font-size: 10pt; color: #666; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+
+        .section-header { 
+            font-size: 14pt; 
+            font-weight: bold; 
+            color: #1a3a5f; 
+            text-transform: uppercase; 
+            border-bottom: 1px solid #1a3a5f;
+            margin: 25px 0 12px 0;
+            padding-bottom: 2px;
+        }
+
+        .experience-item { margin-bottom: 20px; }
+        .exp-meta { display: flex; justify-content: space-between; font-weight: bold; font-size: 12pt; color: #222; }
+        .exp-sub { color: #1a3a5f; font-style: italic; margin-bottom: 5px; font-weight: 600; }
+        .exp-desc { font-size: 10.5pt; text-align: justify; line-height: 1.5; }
+        .exp-desc ul { padding-left: 18px; margin-top: 5px; }
+        .exp-desc li { margin-bottom: 4px; }
+
+        .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 10.5pt; }
+        .skill-cat { font-weight: bold; color: #1a3a5f; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; margin: 0; }
+            .resume-container { box-shadow: none; margin: 0; width: 100%; border: none; }
+        }
+    </style>
+</head>
+<body>
+    {% if preview_mode %}
+    <div class="no-print">
+        <form action="{{ url_for('generate_pdf', job_id=job.id) }}" method="POST" style="display:inline;">
+            <input type="hidden" name="template" value="professional_executive">
+            <button type="submit" class="btn btn-primary btn-lg">💾 Code-Generate PDF</button>
+        </form>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-lg ms-2">Back to Dashboard</a>
+    </div>
+    {% endif %}
+
+    <div class="resume-container">
+        <div class="header">
+            <div class="name">{{ profile.personal_info.first_name }} {{ profile.personal_info.last_name }}</div>
+            <div class="title-line">{{ profile.personal_info.headline }}</div>
+            <div class="contact-info">
+                {{ profile.personal_info.location }} • {{ profile.personal_info.phone }} • {{ profile.personal_info.email }}<br>
+                <a href="{{ profile.personal_info.linkedin_url }}" style="text-decoration:none; color:#1a3a5f;">LinkedIn Profile</a>
+            </div>
+        </div>
+
+        <div class="section-header">Executive Summary</div>
+        <div class="exp-desc">
+            {{ profile.summary or "Strategic and results-driven Engineering Leader with over 10 years of experience in architecting scalable platforms and leading high-performing teams. Expert in microservices modernization, AI-augmented engineering systems, and driving 80%+ reduction in production incidents through advanced observability." }}
+        </div>
+
+        <div class="section-header">Professional Experience</div>
+        {% for exp in profile.experience %}
+        <div class="experience-item">
+            <div class="exp-meta">
+                <span>{{ exp.company }}</span>
+                <span>{{ exp.start_date }} – {{ exp.end_date }}</span>
+            </div>
+            <div class="exp-sub">{{ exp.title }}</div>
+            <div class="exp-desc">
+                {% if exp.description is string %}
+                    {{ exp.description }}
+                {% else %}
+                    <ul>
+                    {% for bullet in exp.description %}
+                        <li>{{ bullet }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="section-header">Technical Skills</div>
+        <div class="skills-grid">
+            <div><span class="skill-cat">Management:</span> Engineering Leadership, Team Building, Agile/SAFe 6.0, Stakeholder Mgmt</div>
+            <div><span class="skill-cat">Cloud/Infra:</span> AWS (Lambda, ECS, SQS, RDS), GCP, GKE, Kubernetes</div>
+            <div><span class="skill-cat">Backend:</span> Node.js, Python (Django, Flask), System Design, Microservices</div>
+            <div><span class="skill-cat">Observability:</span> Datadog, Observability-driven Development, AI Agents</div>
+        </div>
+
+        <div class="section-header">Education & Certifications</div>
+        {% for edu in profile.education %}
+        <div class="exp-meta" style="font-size: 11pt;">
+            <span>{{ edu.school }}</span>
+            <span>{{ edu.start_date }} – {{ edu.end_date }}</span>
+        </div>
+        <div style="font-style:italic; margin-bottom:10px;">{{ edu.degree }}</div>
+        {% endfor %}
+        
+        {% for cert in profile.certifications %}
+        <div class="exp-meta" style="font-size: 11pt; margin-top:5px;">
+            <span>{{ cert.name }}</span>
+            <span>{{ cert.date }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

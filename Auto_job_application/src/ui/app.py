@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, jsonify
 from Auto_job_application.src.tools.database_tool import DatabaseManager
 from pathlib import Path
 import json
+import subprocess
 
 app = Flask(__name__)
 
@@ -9,7 +10,8 @@ app = Flask(__name__)
 BASE_DIR = Path("/home/somnath/.openclaw/workspace/Auto_job_application")
 DB_PATH = BASE_DIR / "data" / "autobot.db"
 PROFILE_PATH = BASE_DIR / "data" / "user_profile.json"
-TEMPLATES_DIR = BASE_DIR / "src" / "ui" / "templates"
+RESUME_DIR = BASE_DIR / "data" / "resumes"
+RESUME_DIR.mkdir(exist_ok=True)
 
 db = DatabaseManager(DB_PATH)
 
@@ -26,7 +28,6 @@ def index():
 
 @app.route('/db')
 def db_viewer():
-    """Raw DB Viewer and Editor."""
     jobs = db.execute("SELECT * FROM jobs", fetch=True)
     return render_template('db_viewer.html', jobs=jobs)
 
@@ -44,19 +45,41 @@ def edit_job(job_id):
 
 @app.route('/resume_preview/<int:job_id>')
 def resume_preview(job_id):
-    """Preview the tailored resume for a specific job."""
+    template_name = request.args.get('template', 'modern_ats')
     job = db.execute("SELECT * FROM jobs WHERE id = ?", (job_id,), fetch=True)[0]
     profile = get_profile()
+    return render_template(f'resume_templates/{template_name}.html', job=job, profile=profile, preview_mode=True)
+
+@app.route('/generate_pdf/<int:job_id>', methods=['POST'])
+def generate_pdf(job_id):
+    """Automated PDF generation using OpenClaw Browser (code-handled)."""
+    template_name = request.form.get('template', 'modern_ats')
     
-    # Placeholder for tailoring logic - currently shows base profile
-    # Later, this will fetch the LLM-tailored version from the DB
-    return render_template('resume_templates/modern_ats.html', job=job, profile=profile)
+    # 1. Start UI URL for the browser to hit
+    url = f"http://localhost:5000/resume_preview/{job_id}?template={template_name}"
+    
+    # 2. Use OpenClaw to print to PDF
+    pdf_filename = f"resume_job_{job_id}.pdf"
+    target_path = RESUME_DIR / pdf_filename
+    
+    # Logic: open tab, wait, print to pdf
+    cmd_open = ["openclaw", "browser", "open", url]
+    subprocess.run(cmd_open)
+    
+    import time
+    time.sleep(3) # Wait for render
+    
+    cmd_pdf = ["openclaw", "browser", "pdf", "--path", str(target_path)]
+    subprocess.run(cmd_pdf)
+    
+    # 3. Update DB
+    db.execute("UPDATE jobs SET cv_path = ? WHERE id = ?", (str(target_path), job_id))
+    
+    return jsonify({"status": "success", "path": str(target_path)})
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile_editor():
-    """Edit the base user profile."""
     if request.method == 'POST':
-        # Simple implementation for now
         new_profile = request.form.get('profile_json')
         with open(PROFILE_PATH, 'w') as f:
             f.write(new_profile)
