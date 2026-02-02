@@ -36,12 +36,37 @@ class LinkedInAgent(BaseAgent):
         return list(dict.fromkeys(re.findall(r'/jobs/view/(\d+)', snapshot_text)))
 
 class TriageEngine(BaseAgent):
-    """Fit assessment engine using profile data."""
+    """Fit assessment and tailoring engine."""
     def __init__(self, profile_path=None):
         super().__init__()
         self.profile_path = profile_path or self.data_dir / "user_profile.json"
         with open(self.profile_path, 'r') as f:
             self.profile_data = json.load(f)
 
-    def generate_prompt(self, title, jd):
+    def generate_triage_prompt(self, title, jd):
         return f"Evaluate fit for {self.profile_data['personal_info']['first_name']}...\nJob: {title}\nJD: {jd}"
+
+    def generate_cover_letter_prompt(self, job_title, company, jd):
+        """Generates a prompt for the sub-agent to write a tailored cover letter."""
+        profile = self.profile_data
+        prompt = f"""
+Write a professional, highly tailored cover letter for the following job application.
+The letter should be concise (max 300 words), highlight matching skills, and sound enthusiastic but benevolent (Vision-like tone).
+
+### JOB DETAILS
+Company: {company or 'The Company'}
+Title: {job_title}
+Job Description: {jd[:2000]}
+
+### CANDIDATE PROFILE
+Name: {profile['personal_info']['first_name']} {profile['personal_info']['last_name']}
+Current Role: {profile['experience'][0]['title']} at {profile['experience'][0]['company']}
+Key Skills: {', '.join(profile['skills'])}
+Top Achievement: {profile['experience'][0]['description'][:500]}
+
+### INSTRUCTIONS
+- Address it to "Hiring Manager" or the specific company.
+- Focus on how the candidate's background in platform engineering and leadership solves the company's specific needs.
+- Return ONLY the text of the cover letter.
+"""
+        return prompt

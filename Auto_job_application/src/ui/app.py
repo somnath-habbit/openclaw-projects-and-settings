@@ -37,7 +37,9 @@ def edit_job(job_id):
         title = request.form.get('title')
         status = request.form.get('status')
         jd_text = request.form.get('jd_text')
-        db.execute("UPDATE jobs SET title = ?, status = ?, jd_text = ? WHERE id = ?", (title, status, jd_text, job_id))
+        cover_letter = request.form.get('cover_letter')
+        db.execute("UPDATE jobs SET title = ?, status = ?, jd_text = ?, cover_letter = ? WHERE id = ?", 
+                   (title, status, jd_text, cover_letter, job_id))
         return redirect(url_for('index'))
     
     job = db.execute("SELECT * FROM jobs WHERE id = ?", (job_id,), fetch=True)[0]
@@ -50,31 +52,24 @@ def resume_preview(job_id):
     profile = get_profile()
     return render_template(f'resume_templates/{template_name}.html', job=job, profile=profile, preview_mode=True)
 
+@app.route('/cover_letter/<int:job_id>')
+def cover_letter_preview(job_id):
+    job = db.execute("SELECT * FROM jobs WHERE id = ?", (job_id,), fetch=True)[0]
+    return render_template('cover_letter.html', job=job)
+
 @app.route('/generate_pdf/<int:job_id>', methods=['POST'])
 def generate_pdf(job_id):
-    """Automated PDF generation using OpenClaw Browser (code-handled)."""
     template_name = request.form.get('template', 'modern_ats')
-    
-    # 1. Start UI URL for the browser to hit
     url = f"http://localhost:5000/resume_preview/{job_id}?template={template_name}"
-    
-    # 2. Use OpenClaw to print to PDF
     pdf_filename = f"resume_job_{job_id}.pdf"
     target_path = RESUME_DIR / pdf_filename
     
-    # Logic: open tab, wait, print to pdf
-    cmd_open = ["openclaw", "browser", "open", url]
-    subprocess.run(cmd_open)
-    
+    subprocess.run(["openclaw", "browser", "open", url])
     import time
-    time.sleep(3) # Wait for render
+    time.sleep(3)
+    subprocess.run(["openclaw", "browser", "pdf", "--path", str(target_path)])
     
-    cmd_pdf = ["openclaw", "browser", "pdf", "--path", str(target_path)]
-    subprocess.run(cmd_pdf)
-    
-    # 3. Update DB
     db.execute("UPDATE jobs SET cv_path = ? WHERE id = ?", (str(target_path), job_id))
-    
     return jsonify({"status": "success", "path": str(target_path)})
 
 @app.route('/profile', methods=['GET', 'POST'])

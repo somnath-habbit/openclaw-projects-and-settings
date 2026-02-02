@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cover Letter - {{ job.title }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; padding: 40px 0; }
+        .letter-paper {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 30mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            font-family: "Georgia", serif;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+        .controls { position: sticky; top: 20px; z-index: 100; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container controls no-print">
+        <div class="btn-group shadow-sm">
+            <a href="{{ url_for('index') }}" class="btn btn-light border">🔙 Dashboard</a>
+            <button onclick="window.print()" class="btn btn-primary">🖨️ Print to PDF</button>
+        </div>
+    </div>
+
+    <div class="letter-paper">
+        {% if job.cover_letter %}
+            {{ job.cover_letter }}
+        {% else %}
+            <div class="text-center text-muted">
+                <p>No cover letter generated for this job yet.</p>
+                <p>Spawning sub-agent to write one...</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

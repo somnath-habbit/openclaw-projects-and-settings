@@ -58,6 +58,8 @@
                                             <li><a class="dropdown-item" href="{{ url_for('resume_preview', job_id=job.id, template='modern_ats') }}">Minimal ATS</a></li>
                                             <li><a class="dropdown-item" href="{{ url_for('resume_preview', job_id=job.id, template='professional_executive') }}">Professional Executive</a></li>
                                             <li><a class="dropdown-item" href="{{ url_for('resume_preview', job_id=job.id, template='modern_sidebar') }}">Modern Sidebar (User Img)</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="{{ url_for('cover_letter_preview', job_id=job.id) }}">Tailored Cover Letter</a></li>
                                         </ul>
                                     </div>
                                 </div>
