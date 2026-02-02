@@ -1,0 +1,85 @@
+{
+  "personal_info": {
+    "first_name": "Somnath",
+    "last_name": "Ghosh",
+    "email": "somnath.ghosh2010@gmail.com",
+    "phone": "+91 9232661324",
+    "linkedin_url": "https://www.linkedin.com/in/somnathghosh007/",
+    "location": "Bengaluru, Karnataka, India",
+    "headline": "Engineering Manager @ Clarivate | Platform & Modernization | AI Augmented Systems"
+  },
+  "experience": [
+    {
+      "title": "Associate Manager, Software Engineering",
+      "company": "Clarivate Analytics",
+      "location": "Bengaluru, India",
+      "start_date": "Apr 2023",
+      "end_date": "Present",
+      "description": "Lead the Alexander Street Back-Office platform (8+ apps). Built India engineering team from scratch (closed 5 roles in 3 months). Reduced critical production incidents by 83% via observability (Datadog) and service ownership. Increased sprint velocity from 12 to 29 SP. Led migration from RabbitMQ to SQS. Leading AI-agent validation workflow design."
+    },
+    {
+      "title": "Engineering Manager",
+      "company": "Trica (Let’s Venture)",
+      "location": "Bengaluru, India",
+      "start_date": "Jul 2022",
+      "end_date": "Mar 2023",
+      "description": "Managed 31 engineers across 3 squads for a B2B SaaS platform (900+ enterprise customers). Led microservices (AWS ECS/Fargate) and micro-frontend (bit.dev) adoption. Implemented multi-cluster MongoDB Atlas architecture."
+    },
+    {
+      "title": "Senior Engineering Management Specialist",
+      "company": "Hashedin by Deloitte",
+      "location": "Bengaluru, India",
+      "start_date": "Jul 2019",
+      "end_date": "Jul 2022",
+      "description": "Led delivery teams of 25+ engineers. Career advisor for 30+ professionals. Projects: Krish-e (Hybrid Cloud AWS/GCP), Pidilite Field Manager (Unified Backend), Healthcare VMS (Serverless Lambda)."
+    },
+    {
+      "title": "Senior Software Developer",
+      "company": "Healthplix Technologies",
+      "location": "Bengaluru, India",
+      "start_date": "Sep 2018",
+      "end_date": "Jul 2019",
+      "description": "Introduced Node.js and MongoDB. Built Spark-based data pipelines (MySQL to MongoDB). Contributed to applied ML recommendation systems."
+    },
+    {
+      "title": "Software Engineer -> Senior Engineer",
+      "company": "Nreach Online Services (Xoxoday)",
+      "location": "Bengaluru, India",
+      "start_date": "Sep 2015",
+      "end_date": "Sep 2018",
+      "description": "Progressed to Technical Lead managing 5 engineers. Led migration from monolith to microservices."
+    }
+  ],
+  "education": [
+    {
+      "school": "Calcutta Institute of Technology",
+      "degree": "Bachelor of Technology (B.Tech.), Computer Science",
+      "start_date": "2011",
+      "end_date": "2015"
+    }
+  ],
+  "skills": [
+    "Engineering Management",
+    "Team Building",
+    "Microservices",
+    "Event-Driven Architecture",
+    "AWS (Lambda, ECS, Fargate, S3, RDS, SQS)",
+    "GCP (Pub/Sub, GKE)",
+    "System Design",
+    "Python (Django, Flask)",
+    "Node.js",
+    "SQL (MySQL, PostgreSQL)",
+    "NoSQL (MongoDB, Redis)",
+    "AI-Augmented Engineering",
+    "Applied LLMs",
+    "Agile & SAFe 6.0",
+    "Observability (Datadog)"
+  ],
+  "certifications": [
+    {
+      "name": "Certified SAFe® 6 Scrum Master",
+      "issuer": "Scaled Agile Inc",
+      "date": "2025"
+    }
+  ]
+}

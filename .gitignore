@@ -1,0 +1,15 @@
+# Databases
+*.db
+*.db-journal
+
+# Snapshots and Browser data
+Auto_job_application/data/latest_snapshot.txt
+Auto_job_application/data/test_snapshot.txt
+Auto_job_application/data/current_prompt.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
