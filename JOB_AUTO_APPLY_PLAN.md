@@ -25,13 +25,23 @@ The system is divided into four autonomous workers sharing a central database.
         *   *Easy Apply?* -> Queue for **Application Bot**.
         *   *External/Complex?* -> Queue for **Resolution Manager**.
 
-### 3. Dynamic CV Generator (The "Writer")
+### 3. Dynamic CV & Cover Letter Generator (The "Writer")
 *   **Trigger**: New "Feasible Job" found.
 *   **Logic**:
     *   **Input**: JD Text + User Skills (JSON).
     *   **LLM Task**: "Rewrite the CV summary and bullet points to highlight skills X, Y, Z from the profile that match this JD. Do not hallucinate new skills."
-    *   **Output**: Generates a clean Markdown file -> Converts to PDF (`Job_123_CV.pdf`).
-    *   **Style**: Modern, ATS-friendly (clean layout, keyword-rich).
+    *   **Cover Letter**: Generate a specific cover letter for the role and save it.
+    *   **Output**: Generates a clean HTML/CSS file -> Converts to PDF (`Job_123_CV.pdf`).
+    *   **Style**: Modern, ATS-friendly templates (HTML/CSS based).
+
+### 4. User Control Center (The "UI")
+*   **Function**: A web-based UI for Somnath to oversee the agent.
+*   **Features**:
+    *   **Template Selector**: Pick from beautiful, ATS-friendly HTML/CSS templates.
+    *   **Resume/Letter Viewer**: Preview the generated documents before application.
+    *   **DB Editor**: A spreadsheet-style view to edit job details, statuses, or user profile data directly in SQLite.
+    *   **Manual Override**: Ability to manually confirm/reject a tailored resume before it moves to the "Application Bot".
+    *   **Image Support**: Option to include/exclude a professional user image based on template selection.
 
 ### 4. Application Bot (The "Doer")
 *   **Function**: Executes the application on LinkedIn.
@@ -73,10 +83,12 @@ The system is divided into four autonomous workers sharing a central database.
 *   Build **API Client** to fetch/update user profile.
 *   Build **Telegram Bot** wrapper for sending/receiving messages.
 
-### Phase 2: CV Generation Engine (Days 4-6)
-*   Implement LLM prompt for JD matching.
-*   Create the "Base CV" template (Jinja2 or Markdown).
-*   Test PDF generation pipeline.
+### Phase 2: CV & UI Engine (Days 4-7)
+*   Build the **User Control Center** (Simple Flask or FastAPI web UI).
+*   Create 2-3 **Beautiful ATS Templates** (HTML/CSS).
+*   Implement LLM sub-agent for Resume & Cover Letter tailoring.
+*   Setup **HTML-to-PDF pipeline** (WeasyPrint).
+*   Add DB Editor to the UI for "Finer Control".
 
 ### Phase 3: The Application Loop (Days 7-10)
 *   Connect `job_search.py` to the CV Engine.
