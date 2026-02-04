@@ -5,6 +5,9 @@ Skills define *how* tools work. This file is for *your* specifics — the stuff 
 ## Secure Login Defaults
 - **LinkedIn:** somnath.ghosh2010@gmail.com (https://www.linkedin.com/login)
 
+## Sub-agent Runtime Policy
+- Default max sub-agent runtime: 15 minutes (kill if idle >= 15m).
+
 ## What Goes Here
 
 Things like:

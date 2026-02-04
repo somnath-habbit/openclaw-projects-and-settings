@@ -1,44 +1,48 @@
 #!/bin/bash
 
 # Configuration
-AUDIO_FILE="/tmp/voice_recording.wav"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TRANSCRIPT_SCRIPT="$SCRIPT_DIR/transcribe.py"
+AUDIO_FILE="/tmp/voice_typing.wav"
+WORKSPACE_DIR="/home/somnath/.openclaw/workspace"
+DB_PATH="$WORKSPACE_DIR/Auto_job_application/data/autobot.db"
+TRANSCRIPT_SCRIPT="$WORKSPACE_DIR/voice-tools/transcribe.py"
+LOCK_FILE="/tmp/ultron_voice.lock"
 
-# 1. Start Recording
-# Using pw-record. running in background.
-pw-record --format=s16 --rate=16000 --channels=1 "$AUDIO_FILE" &
-REC_PID=$!
+# --- Logic ---
 
-# 2. Show Dialog to Stop
-zenity --info --title="Voice Typing" --text="Recording... Click OK to stop." --icon-name=microphone
+if [ -f "$LOCK_FILE" ]; then
+    # 1. STOP RECORDING
+    REC_PID=$(cat "$LOCK_FILE")
+    kill $REC_PID
+    rm "$LOCK_FILE"
+    
+    notify-send "Ultron Voice" "Processing..." -i microphone-sensitivity-high-symbolic
+    
+    # 2. TRANSCRIBE
+    TEXT=$(python3 "$TRANSCRIPT_SCRIPT" "$AUDIO_FILE")
+    
+    if [[ -z "$TEXT" || "$TEXT" == Error* ]]; then
+        notify-send "Ultron Voice" "Error: $TEXT"
+        exit 1
+    fi
 
-# 3. Stop Recording
-kill $REC_PID
-wait $REC_PID 2>/dev/null
-
-# 4. Notify Transcribing
-zenity --notification --text="Transcribing..." --window-icon=info
-
-# 5. Transcribe
-# Check if python script exists
-if [ ! -f "$TRANSCRIPT_SCRIPT" ]; then
-    zenity --error --text="Error: transcribe.py not found at $TRANSCRIPT_SCRIPT"
-    exit 1
-fi
-
-TEXT=$(python3 "$TRANSCRIPT_SCRIPT" "$AUDIO_FILE")
-
-# 6. Show Result (and allow copy)
-if command -v wl-copy >/dev/null; then
+    # 3. CLIPBOARD & PASTE
     echo -n "$TEXT" | wl-copy
-    zenity --info --text="Text copied to clipboard:\n\n$TEXT" --title="Success"
-elif command -v xclip >/dev/null; then
-    echo -n "$TEXT" | xclip -selection clipboard
-    zenity --info --text="Text copied to clipboard:\n\n$TEXT" --title="Success"
-else
-    # Fallback: Show text box
-    echo "$TEXT" | zenity --text-info --title="Transcription Result" --editable --width=400 --height=300
-fi
+    
+    # Attempt auto-paste using common Wayland tools if present
+    if command -v wtype >/dev/null; then
+        wtype "$TEXT"
+    elif command -v ydotool >/dev/null; then
+        ydotool type "$TEXT"
+    fi
 
-rm "$AUDIO_FILE"
+    # 4. LOG TO DB
+    python3 -c "import sqlite3; conn = sqlite3.connect('$DB_PATH'); conn.cursor().execute('INSERT INTO voice_logs (transcription) VALUES (?)', (\"$TEXT\",)); conn.commit(); conn.close();"
+
+    notify-send "Ultron Voice" "Pasted: $TEXT"
+    rm "$AUDIO_FILE"
+else
+    # 1. START RECORDING
+    pw-record --format=s16 --rate=16000 --channels=1 "$AUDIO_FILE" &
+    echo $! > "$LOCK_FILE"
+    notify-send "Ultron Voice" "Listening... Press shortcut again to stop." -i microphone-sensitivity-muted-symbolic -t 2000
+fi

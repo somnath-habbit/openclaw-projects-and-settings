@@ -1,0 +1,9 @@
+# Core dependencies
+playwright>=1.40.0
+
+# AI Providers
+anthropic>=0.40.0  # For Anthropic provider
+requests>=2.31.0   # For HuggingFace and Ollama providers
+
+# Optional dependencies (only needed if using specific providers)
+# huggingface-hub>=0.20.0  # Alternative HF client (not required)

@@ -1,0 +1,500 @@
+- RootWebArea "(24) Engineering Manager Jobs in Bengaluru | LinkedIn"
+  - none
+    - generic
+      - generic
+        - region "Toast message"
+          - sectionheader
+            - heading "0 notifications total"
+              - StaticText "0 notifications total"
+                - InlineTextBox "0 notifications total"
+          - alert
+      - generic
+      - generic
+      - generic
+      - generic
+        - generic
+          - none
+            - button "Skip to search"
+              - none
+                - StaticText "Skip to search"
+                  - InlineTextBox "Skip to search"
+            - button "Skip to main content"
+              - none
+                - StaticText "Skip to main content"
+                  - InlineTextBox "Skip to main content"
+            - generic
+            - button "Keyboard shortcuts"
+              - none
+                - StaticText "Keyboard shortcuts"
+                  - InlineTextBox "Keyboard shortcuts"
+            - button "Close jump menu"
+              - none
+                - StaticText "Close jump menu"
+                  - InlineTextBox "Close "
+                  - InlineTextBox "jump "
+                  - InlineTextBox "menu"
+        - banner "Global Navigation"
+          - none
+            - link "LinkedIn"
+              - none
+                - none
+                  - image "LinkedIn"
+                    - image
+            - generic
+              - none
+                - generic
+                - generic
+                  - generic
+                    - generic
+                      - generic
+                        - LabelText
+                          - none
+                            - StaticText "Search by title, skill, or company"
+                              - InlineTextBox "Search by title, skill, or company"
+                          - none
+                            - none
+                          - none
+                            - none
+                        - combobox "Search by title, skill, or company" = "Engineering Manager"
+                          - generic
+                            - StaticText "Engineering Manager"
+                              - InlineTextBox "Engineering Manager"
+                        - none
+                        - none
+                        - none
+                        - none
+                  - generic
+                    - generic
+                      - generic
+                        - LabelText
+                          - none
+                            - StaticText "City, state, or zip code"
+                              - InlineTextBox "City, state, or zip code"
+                          - none
+                            - none
+                        - combobox "City, state, or zip code" = "Bengaluru, Karnataka, India"
+                          - generic
+                            - StaticText "Bengaluru, Karnataka, India"
+                              - InlineTextBox "Bengaluru, Karnataka, India"
+                        - none
+                        - none
+                  - button "Search"
+                    - StaticText "Search"
+                      - InlineTextBox "Search"
+            - navigation "Primary Navigation"
+              - list
+                - listitem
+                  - link "new feed updates notifications Home"
+                    - generic
+                      - none
+                        - none
+                          - StaticText "new feed updates notifications"
+                            - InlineTextBox "new feed updates notifications"
+                      - none
+                        - none
+                    - generic
+                      - StaticText "Home"
+                        - InlineTextBox "Home"
+                - listitem
+                  - link "My Network"
+                    - none
+                      - none
+                    - generic
+                      - StaticText "My Network"
+                        - InlineTextBox "My Network"
+                - listitem
+                  - link "Jobs"
+                    - none
+                      - none
+                    - generic
+                      - StaticText "Jobs"
+                        - InlineTextBox "Jobs"
+                - listitem
+                  - link "1 new message notification Messaging"
+                    - generic
+                      - none
+                        - none
+                          - StaticText "1 new message notification"
+                            - InlineTextBox "1 new message notification"
+                      - none
+                        - none
+                    - generic
+                      - StaticText "Messaging"
+                        - InlineTextBox "Messaging"
+                - listitem
+                  - link "23 new notifications Notifications"
+                    - generic
+                      - none
+                        - none
+                          - StaticText "23 new notifications"
+                            - InlineTextBox "23 new notifications"
+                      - none
+                        - none
+                    - generic
+                      - StaticText "Notifications"
+                        - InlineTextBox "Notifications"
+                - listitem
+                  - generic
+                    - button "Somnath Ghosh Me"
+                      - image "Somnath Ghosh"
+                      - none
+                        - StaticText "Me"
+                          - InlineTextBox "Me"
+                - listitem
+                  - generic
+                    - button "For Business"
+                      - none
+                        - none
+                      - generic
+                        - StaticText "For Business"
+                          - InlineTextBox "For Business"
+                - listitem
+                  - link "Learning"
+                    - none
+                      - none
+                    - generic
+                      - StaticText "Learning"
+                        - InlineTextBox "Learning"
+        - none
+          - generic
+          - generic
+          - none
+          - none
+            - generic
+              - none
+                - region "search filters"
+                  - heading "Jobs search"
+                    - StaticText "Jobs search"
+                      - InlineTextBox "Jobs search"
+                  - none
+                    - none
+                      - generic
+                        - list
+                          - listitem
+                            - generic
+                              - button " Filter by: Jobs"
+                                - StaticText "Jobs"
+                                  - InlineTextBox "Jobs"
+                          - listitem
+                          - listitem
+                            - generic
+                              - radio "Easy Apply filter."
+                                - StaticText "Easy Apply"
+                                  - InlineTextBox "Easy Apply"
+                          - listitem
+                            - none
+                              - generic
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                        - none
+                                        - none
+                                    - none
+                                      - none
+                                  - none
+                              - generic
+                                - button "Distance filter. Clicking this button displays all Distance filter options."
+                                  - StaticText "40 km"
+                                    - InlineTextBox "40 km"
+                                - generic
+                                  - generic
+                          - listitem
+                            - none
+                              - generic
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                              - generic
+                                - button "Date posted filter. Clicking this button displays all Date posted filter options."
+                                  - StaticText "Date posted"
+                                    - InlineTextBox "Date posted"
+                                - generic
+                                  - generic
+                          - listitem
+                            - none
+                              - generic
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                              - generic
+                                - button "Experience level filter. Clicking this button displays all Experience level filter options."
+                                  - StaticText "Experience level"
+                                    - InlineTextBox "Experience level"
+                                - generic
+                                  - generic
+                          - none
+                          - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - none
+                            - none
+                              - none
+                                - none
+                              - none
+                                - none
+                          - listitem
+                            - none
+                              - generic
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                                - none
+                                  - none
+                                    - none
+                                      - none
+                                    - none
+                                      - none
+                              - generic
+                                - button "Remote filter. Clicking this button displays all Remote filter options."
+                                  - StaticText "Remote"
+                                    - InlineTextBox "Remote"
+                                - generic
+                                  - generic
+                        - none
+                          - none
+                          - generic
+                            - button "Show all filters. Clicking this button displays all available filter options."
+                              - StaticText "All filters"
+                                - InlineTextBox "All filters"
+                            - generic
+                          - button "Reset applied filters"
+                            - none
+                              - StaticText "Reset"
+                                - InlineTextBox "Reset"
+                      - button "Try the new job search"
+                        - none
+                          - StaticText "Try the new job search"
+                            - InlineTextBox "Try the new job search"
+            - none
+              - none
+                - main
+                  - generic
+                    - none
+                    - none
+                      - generic
+                        - sectionheader
+                          - none
+                            - generic
+                              - StaticText "Engineering Manager in Bengaluru, Karnataka, India"
+                                - InlineTextBox "Engineering Manager in Bengaluru, Karnataka, India"
+                            - none
+                              - none
+                                - generic
+                                  - StaticText "139 results"
+                                    - InlineTextBox "139 results"
+                          - none
+                            - none
+                              - generic
+                                - LabelText
+                                  - none
+                                    - StaticText "Set job alert for Engineering Manager in Bengaluru"
+                                      - InlineTextBox "Set job alert for Engineering Manager in Bengaluru"
+                                - switch "Set job alert for Engineering Manager in Bengaluru"
+                          - none
+                        - generic
+                          - button "Jump to active job details"
+                            - none
+                              - StaticText "Jump to active job details"
+                                - InlineTextBox "Jump to active job details"
+                          - button "Jump to active search result"
+                            - none
+                              - StaticText "Jump to active search result"
+                                - InlineTextBox "Jump to active search result"
+                          - none
+                          - list
+                            - listitem
+                              - none
+                                - generic
+                                  - none
+                                    - generic
+                                      - generic
+                                        - none
+                                        - none
+                                        - image "Target logo"
+                                      - generic
+                                        - generic
+                                        - link "Sr Engineering Manager - AdTech with verification"
+                                        - none
+                                        - none
+                                        - none
+                                        - StaticText "Sr Engineering Manager - AdTech with verification"
+                                        - InlineTextBox "Sr Engineering Manager - AdTech with verification"
+                                        - generic
+                                        - StaticText "Target"
+                                        - InlineTextBox "Target"
+                                        - generic
+                                        - list
+                                        - listitem
+                                        - none
+                                        - StaticText "Bengaluru, Karnataka, India (On-site)"
+                                        - InlineTextBox "Bengaluru, Karnataka, India (On-site)"
+                                    - none
+                                      - none
+                                        - none
+                                        - none
+                                        - list
+                                        - listitem
+                                        - none
+                                        - none
+                                        - listitem
+                                        - none
+                                        - none
+                                        - listitem
+                                        - none
+                                        - none
+                                        - generic
+                                        - StaticText "3 connections work here"
+                                        - InlineTextBox "3 connections work here"
+                                    - list
+                                      - listitem
+                                        - StaticText "Viewed"
+                                        - InlineTextBox "Viewed"
+                                      - listitem
+                                        - none
+                                        - StaticText "Promoted"

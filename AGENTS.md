@@ -182,6 +182,11 @@ Think of it like a human reviewing their journal and updating their mental model
 
 The goal: Be helpful without being annoying. Check in a few times a day, do useful background work, but respect quiet time.
 
+## Task Dispatch Policy (2026-02-04)
+- Default: All user-requested tasks are dispatched to dedicated sub-agents; the main session stays managerial and should not run the task directly.
+- Sub-agents must report back here on completion or if blocked/stuck. The main session coordinates/summarizes.
+- If a task truly must run inline, call it out explicitly and get confirmation; otherwise keep work off the main session.
+
 ## Make It Yours
 
 This is a starting point. Add your own conventions, style, and rules as you figure out what works.

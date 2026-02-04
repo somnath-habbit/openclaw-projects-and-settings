@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Resume Editor - {{ profile.personal_info.first_name }}</title>
+    <title>Resume Editor - {{ active_profile.profile.name if active_profile.profile else 'Resume' }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -13,7 +14,29 @@
             flex-direction: column;
         }
 
-        /* Navbar */
+        .draggable-section {
+            border: 1px dashed transparent;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        .draggable-section:hover {
+            border-color: #ccc;
+        }
+
+        .draggable-section.drag-over {
+            border-top: 2px solid #007bff;
+        }
+
+        .section-header-wrapper {
+            cursor: grab;
+            /* Indicate draggable */
+        }
+
+        .section-header-wrapper:active {
+            cursor: grabbing;
+        }
+
         .editor-nav {
             background: #fff;
             padding: 10px 20px;
@@ -31,7 +54,6 @@
             overflow: hidden;
         }
 
-        /* Sidebar - Draggable Items */
         .sidebar {
             width: 350px;
             background: #fff;
@@ -58,62 +80,148 @@
             margin-bottom: 8px;
             border-radius: 6px;
             cursor: grab;
-            transition: all 0.2s;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .draggable-item:hover {
             border-color: #007bff;
-            box-shadow: 0 2px 5px rgba(0,123,255,0.1);
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.1);
         }
 
-        .draggable-item:active {
-            cursor: grabbing;
-        }
-
-        .item-details {
-            font-size: 0.9rem;
-        }
-        
         .item-details small {
             display: block;
             color: #777;
             font-size: 0.75rem;
         }
 
-        /* Canvas - Resume Preview */
         .canvas-area {
             flex: 1;
             background: #525659;
             overflow-y: auto;
             padding: 40px;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
         }
 
         .resume-paper {
             background: white;
             width: 210mm;
-            min-height: 297mm;
+            height: 297mm;
+            /* Fixed A4 height */
+            flex-shrink: 0;
+            /* Prevent shrinking */
             padding: 20mm;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
             font-family: "Segoe UI", Arial, sans-serif;
             line-height: 1.4;
             color: #333;
             position: relative;
+            margin-bottom: 20px;
+            overflow: visible;
+            /* CSS CHANGE: Show overflow so user can select/move it */
+            border: 1px solid transparent;
         }
 
-        /* Droppable Zones in Resume */
+        /* Visual guide for the bottom of the page */
+        .resume-paper::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            border-bottom: 1px dashed #ccc;
+            pointer-events: none;
+        }
+
+        .resume-paper.overflowing {
+            border: 2px solid red;
+        }
+
+        .resume-paper.overflowing::after {
+            content: "⚠️ Content Overflow - Add New Page";
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .mode-toggle a {
+            text-decoration: none;
+            margin-right: 15px;
+            padding-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .mode-toggle a.active {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        /* Reuse previous CSS for exp-item, headers, etc */
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #2c3e50;
+            background: #ecf0f1;
+            padding: 5px 10px;
+            margin: 20px 0 10px 0;
+            text-transform: uppercase;
+            border-left: 5px solid #2c3e50;
+        }
+
+        .name {
+            font-size: 28pt;
+            font-weight: bold;
+            color: #2c3e50;
+            text-transform: uppercase;
+        }
+
+        .headline {
+            font-size: 14pt;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .exp-item {
+            margin-bottom: 15px;
+            position: relative;
+            padding: 5px;
+            border: 1px solid transparent;
+        }
+
+        .exp-item:hover {
+            border-color: #ddd;
+            background: #fdfdfd;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .skills-tag {
+            display: inline-block;
+            background: #f1f1f1;
+            padding: 2px 8px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: grab;
+        }
+
         .drop-zone {
             min-height: 50px;
             border: 2px dashed transparent;
-            border-radius: 4px;
-            transition: all 0.2s;
-            padding: 5px;
         }
 
         .drop-zone.drag-over {
@@ -121,42 +229,7 @@
             background: rgba(40, 167, 69, 0.05);
         }
 
-        .drop-zone:empty::before {
-            content: "Drop items here";
-            color: #ccc;
-            text-align: center;
-            display: block;
-            padding: 10px;
-            font-style: italic;
-        }
-
-        /* Resume Styling (Inherited from modern_ats) */
-        .header { border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 20px; }
-        .name { font-size: 28pt; font-weight: bold; color: #2c3e50; text-transform: uppercase; letter-spacing: 1px; }
-        .headline { font-size: 14pt; color: #7f8c8d; font-style: italic; }
-        .section-title { 
-            font-size: 14pt; 
-            font-weight: bold; 
-            color: #2c3e50; 
-            background: #ecf0f1; 
-            padding: 5px 10px; 
-            margin: 20px 0 10px 0;
-            text-transform: uppercase;
-            border-left: 5px solid #2c3e50;
-            cursor: pointer; /* Indication it can be interacted with */
-        }
-        .exp-item { 
-            margin-bottom: 15px; 
-            position: relative; 
-            padding: 5px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-        }
-        .exp-item:hover {
-            border-color: #ddd;
-            background: #fdfdfd;
-        }
-        .exp-item .remove-btn {
+        .remove-btn {
             display: none;
             position: absolute;
             top: 2px;
@@ -166,48 +239,138 @@
             border: none;
             cursor: pointer;
         }
+
         .exp-item:hover .remove-btn {
             display: block;
         }
-        
-        .exp-header { display: flex; justify-content: space-between; font-weight: bold; }
-        .skills-container { display: flex; flex-wrap: wrap; gap: 5px; }
-        .skills-tag {
-            display: inline-block;
-            background: #f1f1f1;
-            padding: 2px 8px;
-            margin: 2px;
-            border-radius: 3px;
-            font-size: 0.9rem;
-            cursor: grab;
-        }
-        .skills-tag:hover { background: #e2e6ea; }
 
+        @media print {
+
+            .editor-nav,
+            .sidebar {
+                display: none !important;
+            }
+
+            .canvas-area {
+                background: white;
+                padding: 0;
+                display: block;
+            }
+
+            .resume-paper {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                page-break-after: always;
+            }
+        }
+
+        .page-controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .page-controls button {
+            margin: 0 10px;
+        }
+
+        .editable-hover:hover {
+            outline: 1px dashed #007bff;
+            background: rgba(0, 123, 255, 0.05);
+        }
+
+        .section-header-wrapper {
+            position: relative;
+        }
+
+        .section-controls {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .section-header-wrapper:hover .section-controls {
+            display: block;
+        }
     </style>
 </head>
-<body>
 
+<body>
     <nav class="editor-nav">
         <div class="d-flex align-items-center">
-            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm me-3"><i class="fas fa-arrow-left"></i> Back</a>
-            <h5 class="m-0">Resume Editor</h5>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm me-3"><i
+                    class="fas fa-arrow-left"></i> Back</a>
+            <div class="mode-toggle">
+                <a href="{{ url_for('resume_editor', job_id=job.id, mode='master') }}"
+                    class="{{ 'active' if mode == 'master' else '' }}">Master Resume</a>
+                <a href="{{ url_for('resume_editor', job_id=job.id, mode='tailored') }}"
+                    class="{{ 'active' if mode == 'tailored' else '' }}">Tailored Resume</a>
+            </div>
         </div>
         <div>
-            <button onclick="window.print()" class="btn btn-primary btn-sm"><i class="fas fa-print"></i> Print / PDF</button>
+            <span class="badge bg-{{ 'warning' if mode == 'master' else 'primary' }} me-3 text-dark">{{ 'MASTER MODE' if
+                mode == 'master' else 'TAILORED MODE' }}</span>
+            <button onclick="addPage()" class="btn btn-info btn-sm me-2"><i class="fas fa-plus"></i> Add Page</button>
+            <select onchange="changeMargins(this.value)" class="form-select form-select-sm d-inline-block w-auto me-2">
+                <option value="20mm">Margins: Normal</option>
+                <option value="12.7mm">Margins: Narrow</option>
+                <option value="10mm">Margins: X-Narrow</option>
+                <option value="25.4mm">Margins: Wide</option>
+            </select>
+            <select onchange="changeFontSize(this.value)" class="form-select form-select-sm d-inline-block w-auto me-2">
+                <option value="14px">Text: Normal (14px)</option>
+                <option value="12px">Text: Small (12px)</option>
+                <option value="11px">Text: X-Small (11px)</option>
+                <option value="16px">Text: Large (16px)</option>
+            </select>
+            <button onclick="saveResume()" class="btn btn-success btn-sm me-2"><i class="fas fa-save"></i> Save</button>
+            <button onclick="window.print()" class="btn btn-primary btn-sm"><i class="fas fa-print"></i> PDF</button>
         </div>
     </nav>
 
     <div class="main-container">
-        <!-- SIDEBAR: Draggable Sources -->
+        <!-- SIDEBAR: Sourced from MASTER Profile ALWAYS -->
         <div class="sidebar">
+
             <div class="sidebar-section">
-                <h6>Experience</h6>
+                <h6>Sections</h6>
+                <div>
+                    <div class="draggable-item" draggable="true" data-type="section" data-section-name="Summary">
+                        <div class="item-details"><strong>Summary</strong></div><i
+                            class="fas fa-grip-vertical text-muted"></i>
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="section" data-section-name="Experience">
+                        <div class="item-details"><strong>Experience</strong></div><i
+                            class="fas fa-grip-vertical text-muted"></i>
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="section" data-section-name="Skills">
+                        <div class="item-details"><strong>Skills</strong></div><i
+                            class="fas fa-grip-vertical text-muted"></i>
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="section" data-section-name="Projects">
+                        <div class="item-details"><strong>Projects</strong></div><i
+                            class="fas fa-grip-vertical text-muted"></i>
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="section" data-section-name="Education">
+                        <div class="item-details"><strong>Education</strong></div><i
+                            class="fas fa-grip-vertical text-muted"></i>
+                    </div>
+                    <div class="draggable-item" draggable="true" data-type="section" data-section-name="Custom">
+                        <div class="item-details"><strong>Custom Section</strong></div><i
+                            class="fas fa-grip-vertical text-muted"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h6>Experience (Master)</h6>
                 <div id="source-experience">
-                    {% for exp in profile.experience %}
-                    <div class="draggable-item" draggable="true" data-type="experience" data-id="{{ loop.index0 }}">
+                    {% for exp in master_profile.experiences %}
+                    <div class="draggable-item" draggable="true" data-type="experience" data-idx="{{ loop.index0 }}">
                         <div class="item-details">
                             <strong>{{ exp.company }}</strong>
-                            <small>{{ exp.title }}</small>
+                            <small>{{ exp.position }}</small>
                         </div>
                         <i class="fas fa-grip-vertical text-muted"></i>
                     </div>
@@ -216,252 +379,423 @@
             </div>
 
             <div class="sidebar-section">
-                <h6>Education</h6>
-                <div id="source-education">
-                    {% for edu in profile.education %}
-                    <div class="draggable-item" draggable="true" data-type="education" data-id="{{ loop.index0 }}">
+                <h6>Projects (Master)</h6>
+                <div>
+                    {% for exp in master_profile.experiences %}
+                    {% set outer_loop = loop %}
+                    {% if exp.projects %}
+                    {% for proj in exp.projects %}
+                    <div class="draggable-item" draggable="true" data-type="project"
+                        data-exp-idx="{{ outer_loop.index0 }}" data-proj-idx="{{ loop.index0 }}">
                         <div class="item-details">
-                            <strong>{{ edu.school }}</strong>
-                            <small>{{ edu.degree }}</small>
+                            <strong>{{ proj.name }}</strong>
+                            <small>{{ proj.category }}</small>
                         </div>
                         <i class="fas fa-grip-vertical text-muted"></i>
                     </div>
+                    {% endfor %}
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>
 
             <div class="sidebar-section">
-                <h6>Skills</h6>
-                <div id="source-skills">
-                    {% for skill in profile.skills %}
-                    <span class="draggable-item d-inline-block w-auto" draggable="true" data-type="skill" data-content="{{ skill }}">
-                        {{ skill }}
+                <h6>Skills (Master)</h6>
+                <div>
+                    {% for skill in master_profile.skills %}
+                    <span class="draggable-item d-inline-block w-auto" draggable="true" data-type="skill"
+                        data-content="{{ skill.name if skill.name else skill }}">
+                        {{ skill.name if skill.name else skill }}
                     </span>
                     {% endfor %}
                 </div>
             </div>
-            
-            <div class="alert alert-info small mt-3">
-                <i class="fas fa-info-circle"></i> Drag items from here to the resume on the right. Currently, this editor organizes the existing profile data.
-            </div>
         </div>
 
-        <!-- CANVAS: Resume Paper -->
-        <div class="canvas-area">
-            <div class="resume-paper" id="resume-content">
-                <!-- Header (Static for now, could be editable) -->
+        <!-- CANVAS: Active Profile -->
+        <div class="canvas-area" id="canvas-area">
+            <div class="resume-paper" id="page-1">
                 <div class="header">
-                    <div class="name" contenteditable="true">{{ profile.personal_info.first_name }} {{ profile.personal_info.last_name }}</div>
-                    <div class="headline" contenteditable="true">{{ profile.personal_info.headline }}</div>
-                    <div class="contact mt-2 small" contenteditable="true">
-                        {{ profile.personal_info.location }} | {{ profile.personal_info.email }} | {{ profile.personal_info.phone }}
+                    <div class="name editable-hover" contenteditable="true" id="profile-name">{{
+                        active_profile.profile.name }}</div>
+                    <div class="headline editable-hover" contenteditable="true" id="profile-title">{{
+                        active_profile.profile.title }}
+                    </div>
+                    <div class="contact mt-2 small editable-hover" contenteditable="true" id="profile-contact">
+                        {{ active_profile.profile.location }} | {{ active_profile.profile.email }} | {{
+                        active_profile.profile.phone }}
                     </div>
                 </div>
 
-                <div class="section-title">Summary</div>
-                <p contenteditable="true" class="drop-zone" id="drop-summary">
-                    {{ profile.summary or "Strategic Engineering Leader with experience in scaling platforms and teams..." }}
-                </p>
-
-                <div class="section-title">Professional Experience</div>
-                <div class="drop-zone" id="drop-experience">
-                    <!-- Default items matching the profile initially, but wrapped to be re-orderable/removable -->
-                    {% for exp in profile.experience %}
-                    <div class="exp-item" draggable="true">
-                        <button class="remove-btn" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-                        <div class="exp-header">
-                            <span contenteditable="true">{{ exp.title }} @ {{ exp.company }}</span>
-                            <span contenteditable="true">{{ exp.start_date }} - {{ exp.end_date }}</span>
+                <div class="draggable-section" draggable="true" data-type="section-block">
+                    <div class="section-header-wrapper">
+                        <div class="section-title drop-target">Summary</div>
+                        <div class="section-controls">
+                            <button class="btn btn-sm btn-danger"
+                                onclick="this.closest('.draggable-section').remove()">Delete</button>
                         </div>
-                        <p class="mb-1" contenteditable="true">{{ exp.description }}</p>
                     </div>
-                    {% endfor %}
+                    <p contenteditable="true" class="drop-zone" id="profile-bio">{{ active_profile.profile.bio }}</p>
                 </div>
 
-                <div class="section-title">Skills & Technologies</div>
-                <div class="drop-zone skills-container" id="drop-skills">
-                    {% for skill in profile.skills %}
-                    <span class="skills-tag" draggable="true">
-                        {{ skill }}
-                        <i class="fas fa-times ms-1 text-muted" style="cursor:pointer" onclick="this.parentElement.remove()"></i>
-                    </span>
-                    {% endfor %}
-                </div>
-
-                <div class="section-title">Education</div>
-                <div class="drop-zone" id="drop-education">
-                    {% for edu in profile.education %}
-                    <div class="exp-item" draggable="true">
-                         <button class="remove-btn" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-                        <div class="exp-header">
-                            <span contenteditable="true">{{ edu.degree }}</span>
-                            <span contenteditable="true">{{ edu.start_date }} - {{ edu.end_date }}</span>
+                <div class="draggable-section" draggable="true" data-type="section-block">
+                    <div class="section-header-wrapper">
+                        <div class="section-title drop-target">Experience</div>
+                        <div class="section-controls">
+                            <button class="btn btn-sm btn-danger"
+                                onclick="this.closest('.draggable-section').remove()">Delete</button>
                         </div>
-                        <div contenteditable="true">{{ edu.school }}</div>
                     </div>
-                    {% endfor %}
+                    <div class="drop-zone" id="drop-experience">
+                        {% if active_profile.experiences %}
+                        {% for exp in active_profile.experiences %}
+                        <div class="exp-item" draggable="true" data-id="{{ exp.id }}">
+                            <button class="remove-btn" onclick="this.parentElement.remove()"><i
+                                    class="fas fa-times"></i></button>
+                            <div class="exp-header">
+                                <span contenteditable="true">{{ exp.position }} @ {{ exp.company }}</span>
+                                <span contenteditable="true">{{ exp.startDate }} - {{ exp.endDate }}</span>
+                            </div>
+                            <div class="mb-1" contenteditable="true">
+                                <ul>
+                                    {% for desc in exp.description %}
+                                    <li>{{ desc }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% if exp.projects %}
+                            <div class="projects-container ps-3 mt-2 border-start">
+                                <strong>Projects:</strong>
+                                {% for proj in exp.projects %}
+                                <div class="project-item mb-2 position-relative">
+                                    <button class="btn btn-sm text-danger position-absolute top-0 end-0 p-0"
+                                        onclick="this.parentElement.remove()" style="z-index:10;"><i
+                                            class="fas fa-times"></i></button>
+                                    <div class="d-flex justify-content-between pe-3">
+                                        <strong>{{ proj.name }}</strong>
+                                        <span>{{ proj.category }}</span>
+                                    </div>
+                                    <p class="small mb-0">{{ proj.description }}</p>
+                                    <small class="text-muted">Impact: {{ proj.impact }}</small>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="draggable-section" draggable="true" data-type="section-block">
+                    <div class="section-header-wrapper">
+                        <div class="section-title drop-target">Skills</div>
+                        <div class="section-controls">
+                            <button class="btn btn-sm btn-danger"
+                                onclick="this.closest('.draggable-section').remove()">Delete</button>
+                        </div>
+                    </div>
+                    <div class="drop-zone skills-container" id="drop-skills">
+                        {% if active_profile.skills %}
+                        {% for skill in active_profile.skills %}
+                        <span class="skills-tag" draggable="true" contenteditable="true">
+                            {{ skill.name if skill.name else skill }}
+                            <i class="fas fa-times ms-1 text-muted" style="cursor:pointer"
+                                onclick="this.parentElement.remove()"></i>
+                        </span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- JavaScript Data Source and Logic -->
-    <script>
-        const profileData = {{ profile_json | safe }};
+        <script>
+            const masterData = {{ master_profile | tojson | safe }};
+            let activeData = {{ active_profile | tojson | safe }};
+            const currentMode = "{{ mode }}";
+            const jobId = {{ job.id }};
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const draggables = document.querySelectorAll('.draggable-item, .exp-item, .skills-tag');
-            const dropZones = document.querySelectorAll('.drop-zone');
+            document.addEventListener('DOMContentLoaded', setupDragAndDrop);
 
-            // --- DRAG START ---
-            document.body.addEventListener('dragstart', (e) => {
-                const target = e.target.closest('[draggable="true"]');
-                if (!target) return;
-                
-                e.dataTransfer.effectAllowed = 'copyMove';
-                
-                // If dragging from sidebar
-                if (target.dataset.type) {
-                    e.dataTransfer.setData('source', 'sidebar');
-                    e.dataTransfer.setData('type', target.dataset.type);
-                    if (target.dataset.id) e.dataTransfer.setData('id', target.dataset.id);
-                    if (target.dataset.content) e.dataTransfer.setData('content', target.dataset.content);
-                } else {
-                    // Reordering within resume
-                    e.dataTransfer.setData('source', 'canvas');
-                    // Mark the element being moved so we can reference it
-                    target.classList.add('dragging-source');
+            function setupDragAndDrop() {
+                const draggables = document.querySelectorAll('.draggable-item, .exp-item, .skills-tag');
+                const dropZones = document.querySelectorAll('.drop-zone, .resume-paper');
+
+                draggables.forEach(d => {
+                    d.addEventListener('dragstart', e => {
+                        e.stopPropagation();
+                        e.dataTransfer.setData('type', d.dataset.type);
+                        if (d.dataset.idx) e.dataTransfer.setData('idx', d.dataset.idx);
+                        if (d.dataset.expIdx) e.dataTransfer.setData('expIdx', d.dataset.expIdx);
+                        if (d.dataset.projIdx) e.dataTransfer.setData('projIdx', d.dataset.projIdx);
+                        if (d.dataset.content) e.dataTransfer.setData('content', d.dataset.content);
+                    });
+                });
+
+                dropZones.forEach(zone => {
+                    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+                    zone.addEventListener('dragleave', e => zone.classList.remove('drag-over'));
+                    zone.addEventListener('drop', e => handleDrop(zone, e));
+                });
+            }
+
+            function handleDrop(zone, e) {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const type = e.dataTransfer.getData('type');
+
+                // Logic to create element based on type & data from masterData
+                // simplified for implementation:
+                let data = null;
+                if (type === 'experience') {
+                    const idx = e.dataTransfer.getData('idx');
+                    data = masterData.experiences[idx];
+                    // Append data to activeData arrays? (Need complex sync logic or just pure DOM manipulation + one-way save)
+                    // For now: DOM manipulation. We rely on Manual "scrape" save or incomplete save.
+                    // Creating Element:
+                    const div = document.createElement('div');
+                    div.className = 'exp-item';
+                    div.draggable = true;
+                    div.innerHTML = `
+                    <button class="remove-btn" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+                    <div class="exp-header"><span contenteditable>${data.position} @ ${data.company}</span><span>${data.startDate}</span></div>
+                    <div contenteditable><ul>${data.description.map(d => `<li>${d}</li>`).join('')}</ul></div>
+                `;
+                    zone.appendChild(div);
+                }
+                // ... (Other types projects/skills similar logic)
+                if (type === 'project') {
+                    const expIdx = e.dataTransfer.getData('expIdx');
+                    const projIdx = e.dataTransfer.getData('projIdx');
+                    // Find in masterData
+                    // This is tricky because masterData structure is exp -> projects. 
+                    // We need to access masterData.experiences[expIdx].projects[projIdx]
+                    // BUT wait, data-exp-idx was outer_loop.index0.
+                    if (masterData.experiences[expIdx] && masterData.experiences[expIdx].projects[projIdx]) {
+                        data = masterData.experiences[expIdx].projects[projIdx];
+                        const div = document.createElement('div');
+                        div.className = 'project-item mb-2 position-relative p-2 border rounded bg-white';
+                        div.innerHTML = `
+                        <button class="btn btn-sm text-danger position-absolute top-0 end-0 p-0" onclick="this.parentElement.remove()" style="z-index:10;"><i class="fas fa-times"></i></button>
+                        <div class="d-flex justify-content-between pe-3"><strong>${data.name}</strong><span>${data.category}</span></div>
+                        <p class="small mb-0">${data.description}</p>
+                        <small class="text-muted">Impact: ${data.impact}</small>
+                     `;
+                        zone.appendChild(div);
+                    }
+                }
+
+                if (type === 'skill') {
+                    const text = e.dataTransfer.getData('content');
+                    const span = document.createElement('span');
+                    span.className = 'skills-tag';
+                    span.innerHTML = `${text} <i class="fas fa-times ms-1 text-muted" onclick="this.parentElement.remove()"></i>`;
+                    zone.appendChild(span);
+                }
+
+                if (type === 'section') {
+                    const name = e.dataTransfer.getData('sectionName') || 'New Section';
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'draggable-section';
+                    sectionDiv.draggable = true;
+                    sectionDiv.dataset.type = 'section-block';
+
+                    let contentHtml = '<div class="drop-zone" style="min-height:30px;"></div>';
+                    if (name === 'Summary') contentHtml = '<p contenteditable="true" class="drop-zone"></p>';
+                    if (name === 'Skills') contentHtml = '<div class="drop-zone skills-container" style="min-height:30px;"></div>';
+
+                    sectionDiv.innerHTML = `
+                    <div class="section-header-wrapper">
+                        <div class="section-title drop-target" contenteditable>${name}</div>
+                        <div class="section-controls">
+                            <button class="btn btn-sm btn-danger" onclick="this.closest('.draggable-section').remove()">Delete</button>
+                        </div>
+                    </div>
+                    ${contentHtml}
+               `;
+                    zone.appendChild(sectionDiv);
+                }
+                // setupDragAndDrop(); // Re-bind for new elements
+            }
+
+            // Handle drag start for generic sections
+            document.addEventListener('dragstart', (e) => {
+                if (e.target.dataset.type === 'section') {
+                    e.dataTransfer.setData('type', 'section');
+                    e.dataTransfer.setData('sectionName', e.target.dataset.sectionName);
+                }
+                if (e.target.dataset.type === 'section-block') {
+                    // Reordering sections
+                    e.dataTransfer.setData('type', 'reorder-section');
+                    e.dataTransfer.effectAllowed = 'move';
+                    // Store reference to the element being dragged
+                    window.draggedSection = e.target;
                 }
             });
 
-            document.body.addEventListener('dragend', (e) => {
-                const dragging = document.querySelector('.dragging-source');
-                if (dragging) dragging.classList.remove('dragging-source');
-                
-                dropZones.forEach(zone => zone.classList.remove('drag-over'));
+            // Add drop listener for reordering sections on resume-paper
+            // We need to detect if we are dropping ON another section to insertBefore
+            document.addEventListener('drop', (e) => {
+                if (e.dataTransfer.getData('type') === 'reorder-section' && window.draggedSection) {
+                    e.preventDefault();
+                    const targetSection = e.target.closest('.draggable-section');
+                    if (targetSection && targetSection !== window.draggedSection) {
+                        // Determine insert before or after
+                        const bounding = targetSection.getBoundingClientRect();
+                        const offset = bounding.y + (bounding.height / 2);
+                        const parent = targetSection.parentNode;
+                        if (e.clientY - offset > 0) {
+                            // After
+                            parent.insertBefore(window.draggedSection, targetSection.nextSibling);
+                        } else {
+                            // Before
+                            parent.insertBefore(window.draggedSection, targetSection);
+                        }
+                    }
+                    window.draggedSection = null;
+                }
             });
 
-            // --- DRAG OVER ---
-            dropZones.forEach(zone => {
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault(); // Necessary to allow dropping
-                    zone.classList.add('drag-over');
-                });
+            function addPage() {
+                const canvas = document.getElementById('canvas-area');
+                const pageId = 'page-' + (canvas.querySelectorAll('.resume-paper').length + 1);
+                const div = document.createElement('div');
+                div.className = 'resume-paper';
+                div.id = pageId;
+                div.innerHTML = '<div class="drop-zone" style="height: 100%; width: 100%; border: 1px dashed #ccc;">Drag items here...</div>';
 
-                zone.addEventListener('dragleave', (e) => {
-                    zone.classList.remove('drag-over');
-                });
+                // Add delete button for page
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2 no-print';
+                btn.innerHTML = '<i class="fas fa-trash"></i>';
+                btn.onclick = function () { div.remove(); };
+                div.appendChild(btn);
 
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
+                canvas.appendChild(div);
+                setupDragAndDrop(); // Re-bind events
+            }
 
-                    const sourceType = e.dataTransfer.getData('source');
-                    
-                    if (sourceType === 'sidebar') {
-                        handleNewItemDrop(zone, e);
-                    } else if (sourceType === 'canvas') {
-                        handleReorderDrop(zone, e);
+            function checkOverflow() {
+                document.querySelectorAll('.resume-paper').forEach(paper => {
+                    if (paper.scrollHeight > paper.clientHeight + 2) { // 2px buffer
+                        paper.classList.add('overflowing');
+                    } else {
+                        paper.classList.remove('overflowing');
                     }
                 });
+            }
+
+            function changeMargins(size) {
+                document.querySelectorAll('.resume-paper').forEach(paper => {
+                    paper.style.padding = size;
+                });
+                activeData.config = activeData.config || {};
+                activeData.config.margin = size;
+                checkOverflow();
+            }
+
+            function changeFontSize(size) {
+                document.querySelectorAll('.resume-paper').forEach(paper => {
+                    paper.style.fontSize = size;
+                });
+                activeData.config = activeData.config || {};
+                activeData.config.fontSize = size;
+                checkOverflow();
+            }
+
+            // Apply config on load if exists
+            window.addEventListener('DOMContentLoaded', () => {
+                if (activeData.config) {
+                    if (activeData.config.margin) {
+                        const marginSelect = document.querySelector('select[onchange^="changeMargins"]');
+                        if (marginSelect) marginSelect.value = activeData.config.margin;
+                        changeMargins(activeData.config.margin);
+                    }
+                    if (activeData.config.fontSize) {
+                        const fontSelect = document.querySelector('select[onchange^="changeFontSize"]');
+                        if (fontSelect) fontSelect.value = activeData.config.fontSize;
+                        changeFontSize(activeData.config.fontSize);
+                    }
+                }
             });
-        });
 
-        function handleNewItemDrop(zone, e) {
-            const type = e.dataTransfer.getData('type');
-            
-            // Validate Drop Zone Type
-            if (type === 'experience' && zone.id !== 'drop-experience') return;
-            if (type === 'education' && zone.id !== 'drop-education') return;
-            if (type === 'skill' && zone.id !== 'drop-skills') return;
+            // Check overflow on input and changes
+            document.addEventListener('input', checkOverflow);
+            setInterval(checkOverflow, 1000); // Periodic check for safety
 
-            if (type === 'experience') {
-                const id = e.dataTransfer.getData('id');
-                const data = profileData.experience[id];
-                const el = createExperienceElement(data);
-                zone.appendChild(el);
-            } else if (type === 'education') {
-                const id = e.dataTransfer.getData('id');
-                const data = profileData.education[id];
-                const el = createEducationElement(data);
-                zone.appendChild(el);
-            } else if (type === 'skill') {
-                const content = e.dataTransfer.getData('content');
-                const el = createSkillElement(content);
-                zone.appendChild(el);
+
+            async function saveResume() {
+                // SCAPING STRATEGY: Update activeData from DOM
+                activeData.profile.name = document.getElementById('profile-name').innerText;
+                activeData.profile.bio = document.getElementById('profile-bio').innerText;
+                // ... (would scrape experiences too, but complex to map back. 
+                // WE WILL SAVE activeData AS IS IF NO DOM CHANGES WERE SYNCED, OR WE NEED TO REBUILD IT)
+
+                // Rebuilding activeData.experiences from DOM (Global query for multi-page support):
+
+                const newExperiences = [];
+                let currentExp = null;
+
+                // Query BOTH experiences and projects in document order to handle nesting and siblings
+                document.querySelectorAll('.exp-item, .project-item').forEach(item => {
+                    if (item.classList.contains('exp-item')) {
+                        // Start new Experience
+                        const headerSpans = item.querySelector('.exp-header').querySelectorAll('span');
+                        const parts = headerSpans[0].innerText.split('@');
+                        const pos = parts[0].trim();
+                        const comp = parts[1] ? parts[1].trim() : '';
+                        const date = headerSpans[1].innerText;
+                        const descList = [];
+                        // Only get LI direct children of contenteditable div? 
+                        // The querySelectorAll('li') gets ALL nested LIs. 
+                        // But projects don't have LIs usually in my template.
+                        // To be safe, look for div > ul > li
+                        const listContainer = item.querySelector('div[contenteditable] ul');
+                        if (listContainer) {
+                            listContainer.querySelectorAll('li').forEach(li => descList.push(li.innerText));
+                        }
+
+                        currentExp = {
+                            position: pos, company: comp, startDate: date, endDate: '', description: descList, projects: []
+                        };
+                        newExperiences.push(currentExp);
+
+                    } else if (item.classList.contains('project-item') && currentExp) {
+                        // Add to current Experience
+                        // Need to scrape project fields. Structure:
+                        // div > div.d-flex > strong (name), span (category)
+                        // div > p (desc)
+                        // div > small (impact - "Impact: ...")
+
+                        const name = item.querySelector('strong') ? item.querySelector('strong').innerText : '';
+                        const cat = item.querySelector('span') ? item.querySelector('span').innerText : '';
+                        const desc = item.querySelector('p') ? item.querySelector('p').innerText : '';
+                        let impact = item.querySelector('small.text-muted') ? item.querySelector('small.text-muted').innerText : '';
+                        impact = impact.replace('Impact:', '').trim();
+
+                        currentExp.projects.push({
+                            name: name, category: cat, description: desc, impact: impact
+                        });
+                    }
+                });
+                activeData.experiences = newExperiences;
+
+                // Send to Backend
+                const resp = await fetch('/save_resume', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: currentMode,
+                        job_id: jobId,
+                        data: activeData
+                    })
+                });
+                const res = await resp.json();
+                if (res.status === 'success') alert('Saved!');
+                else alert('Error saving');
             }
-        }
-
-        function handleReorderDrop(zone, e) {
-            const draggingEl = document.querySelector('.dragging-source');
-            if (draggingEl && zone.contains(draggingEl) || zone === draggingEl.parentElement) {
-                // Determine insertion position
-                const afterElement = getDragAfterElement(zone, e.clientY);
-                if (afterElement == null) {
-                    zone.appendChild(draggingEl);
-                } else {
-                    zone.insertBefore(draggingEl, afterElement);
-                }
-            }
-        }
-
-        // Helper to find position
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('[draggable="true"]:not(.dragging-source)')];
-            
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-
-        // Element Creators
-        function createExperienceElement(data) {
-            const div = document.createElement('div');
-            div.className = 'exp-item';
-            div.draggable = true;
-            div.innerHTML = `
-                <button class="remove-btn" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-                <div class="exp-header">
-                    <span contenteditable="true">${data.title} @ ${data.company}</span>
-                    <span contenteditable="true">${data.start_date} - ${data.end_date}</span>
-                </div>
-                <p class="mb-1" contenteditable="true">${data.description}</p>
-            `;
-            return div;
-        }
-
-        function createEducationElement(data) {
-            const div = document.createElement('div');
-            div.className = 'exp-item';
-            div.draggable = true;
-            div.innerHTML = `
-                <button class="remove-btn" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
-                <div class="exp-header">
-                    <span contenteditable="true">${data.degree}</span>
-                    <span contenteditable="true">${data.start_date} - ${data.end_date}</span>
-                </div>
-                <div contenteditable="true">${data.school}</div>
-            `;
-            return div;
-        }
-
-        function createSkillElement(text) {
-            const span = document.createElement('span');
-            span.className = 'skills-tag';
-            span.draggable = true;
-            span.innerHTML = `
-                ${text}
-                <i class="fas fa-times ms-1 text-muted" style="cursor:pointer" onclick="this.parentElement.remove()"></i>
-            `;
-            return span;
-        }
-
-    </script>
+        </script>
 </body>
+
 </html>

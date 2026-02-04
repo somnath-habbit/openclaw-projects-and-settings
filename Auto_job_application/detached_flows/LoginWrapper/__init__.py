@@ -1,0 +1,1 @@
+# LinkedIn login wrapper module
