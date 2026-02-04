@@ -54,11 +54,65 @@ python3 tests/test_enrichment.py
 - Limit: 3 jobs (from database where `about_job IS NULL`)
 - Debug mode: ON (screenshots saved to `data/screenshots/`)
 
-### 3. Run All Tests
+### 3. TDD Extraction Tests (`test_enrichment_extraction.py`)
+
+Pytest-based tests for job enrichment extraction quality (Test-Driven Development).
+
+**What it tests:**
+- Job description minimum length (>= 500 chars)
+- Key sections present (responsibilities, requirements, etc.)
+- Apply button detection
+- Enrichment quality validation
+- Multiple jobs consistency
+- Full paragraphs extraction
+- "Show more" button expansion
+
+**Run:**
+```bash
+make test-extraction
+# or
+pytest tests/test_enrichment_extraction.py -v
+```
+
+**Configure custom job URLs:**
+
+Override the default (potentially outdated) job IDs via:
+
+1. **Command line:**
+```bash
+pytest tests/test_enrichment_extraction.py --job-urls="https://www.linkedin.com/jobs/view/12345/,https://www.linkedin.com/jobs/view/67890/"
+```
+
+2. **Environment variable:**
+```bash
+export TEST_JOB_URLS="https://www.linkedin.com/jobs/view/12345/,https://www.linkedin.com/jobs/view/67890/"
+pytest tests/test_enrichment_extraction.py -v
+```
+
+### 4. Edge Case Tests (`test_edge_cases.py`)
+
+Pytest-based tests for handling edge cases.
+
+**What it tests:**
+- Jobs no longer accepting applications (closed/filled)
+- Jobs already applied to
+- Disabled apply buttons
+- Detection function accuracy
+
+**Run:**
+```bash
+make test-edge-cases
+# or
+pytest tests/test_edge_cases.py -v
+```
+
+### 5. Run All Tests
 
 ```bash
 make test-all
 ```
+
+Runs: test-scraper, test-enrichment, test-extraction, test-edge-cases
 
 ## Test Environment
 

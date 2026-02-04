@@ -1,4 +1,4 @@
-.PHONY: start stop start-scraper stop-scraper playwright-scrape playwright-enrich cron-install cron-remove cron-list test-scraper test-enrichment test-all help
+.PHONY: start stop start-scraper stop-scraper playwright-scrape playwright-enrich cron-install cron-remove cron-list test-scraper test-enrichment test-extraction test-all help
 
 BASE_DIR := $(abspath .)
 DATA_DIR ?= $(BASE_DIR)/data
@@ -75,7 +75,15 @@ test-enrichment:
 	@echo "Testing Playwright enrichment (assumes active LinkedIn session)..."
 	@cd $(BASE_DIR) && python3 tests/test_enrichment.py
 
-test-all: test-scraper test-enrichment
+test-extraction:
+	@echo "Running TDD extraction tests (pytest)..."
+	@cd $(BASE_DIR) && pytest tests/test_enrichment_extraction.py -v
+
+test-edge-cases:
+	@echo "Running edge case tests (pytest)..."
+	@cd $(BASE_DIR) && pytest tests/test_edge_cases.py -v
+
+test-all: test-scraper test-enrichment test-extraction test-edge-cases
 	@echo "All tests completed!"
 
 help:
@@ -99,9 +107,11 @@ help:
 	@echo "  make cron-list     - Show scraper cron entries from user crontab"
 	@echo ""
 	@echo "Testing (Playwright - requires active LinkedIn session):"
-	@echo "  make test-scraper     - Test job scraping (limit=5)"
-	@echo "  make test-enrichment  - Test job enrichment (limit=3)"
-	@echo "  make test-all         - Run all tests"
+	@echo "  make test-scraper      - Test job scraping (limit=5)"
+	@echo "  make test-enrichment   - Test job enrichment (limit=3)"
+	@echo "  make test-extraction   - Run TDD extraction tests (pytest)"
+	@echo "  make test-edge-cases   - Run edge case tests (closed jobs, already applied)"
+	@echo "  make test-all          - Run all tests"
 	@echo ""
 	@echo "  make help          - Show this help message"
 	@echo ""

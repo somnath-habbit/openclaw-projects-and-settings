@@ -80,6 +80,23 @@ class JobEnricher:
             # Extract all data
             details = await self._extract_job_details()
 
+            # Check edge cases first
+            if details.get("is_closed"):
+                return {
+                    **details,
+                    "job_url": job_url,
+                    "enrich_status": "CLOSED",
+                    "last_enrich_error": "Job no longer accepting applications",
+                }
+
+            if details.get("already_applied"):
+                return {
+                    **details,
+                    "job_url": job_url,
+                    "enrich_status": "ALREADY_APPLIED",
+                    "last_enrich_error": None,
+                }
+
             # Assess quality
             needs_enrich, error = self._assess_quality(details)
 
@@ -98,6 +115,8 @@ class JobEnricher:
                 "compensation": None,
                 "work_mode": None,
                 "apply_type": None,
+                "is_closed": False,
+                "already_applied": False,
                 "job_url": job_url,
                 "enrich_status": "NEEDS_ENRICH",
                 "last_enrich_error": str(e),
@@ -134,49 +153,83 @@ class JobEnricher:
         """
         details = await self.session.page.evaluate("""
             () => {
-                // Helper to extract text from a section
+                // IMPROVED: More robust section extraction
                 function extractSection(headings) {
+                    // Strategy 1: Try direct container selectors first (most reliable)
+                    const directContainers = [
+                        '.jobs-description__content',
+                        '.job-details-jobs-unified-top-card__job-description',
+                        '.jobs-description',
+                        'div[class*="job-description"]',
+                        'div[class*="description-content"]'
+                    ];
+
+                    for (const selector of directContainers) {
+                        const container = document.querySelector(selector);
+                        if (container && container.innerText && container.innerText.length > 100) {
+                            // Found a container with substantial content
+                            return container.innerText.trim();
+                        }
+                    }
+
+                    // Strategy 2: Find by heading text and get associated content
                     for (const heading of headings) {
-                        // Try multiple selector strategies
-                        const selectors = [
-                            'h2, h3',
-                            '.job-details__section-header',
-                            '.jobs-description__content h2',
-                            '.jobs-description__content h3',
-                            'div[class*="description"] h2',
-                            'div[class*="description"] h3'
-                        ];
+                        // Look for all headings
+                        const allHeadings = document.querySelectorAll('h2, h3, h4, .section-title, [class*="section-header"]');
 
-                        for (const selector of selectors) {
-                            const elements = Array.from(document.querySelectorAll(selector));
-                            const matchedElement = elements.find(el =>
-                                el.textContent.trim().toLowerCase().includes(heading.toLowerCase())
-                            );
+                        for (const h of allHeadings) {
+                            const headingText = h.textContent.trim().toLowerCase();
 
-                            if (matchedElement) {
-                                // Strategy 1: Find the main description container
-                                let container = matchedElement.closest('.jobs-description__content, .job-details__section, article, [class*="description-container"]');
+                            if (headingText.includes(heading.toLowerCase())) {
+                                // Found matching heading - try to get its parent container
+                                let parent = h.closest('section, article, div[class*="section"], div[class*="content"]');
 
-                                if (container) {
-                                    // Get all text from container
-                                    let text = container.innerText || container.textContent;
-                                    return text.trim();
+                                if (parent && parent.innerText && parent.innerText.length > 100) {
+                                    return parent.innerText.trim();
                                 }
 
-                                // Strategy 2: Get all following siblings until next heading
+                                // Fallback: collect all following siblings until next major heading
                                 let text = '';
-                                let current = matchedElement.nextElementSibling;
-                                while (current && !current.matches('h1, h2, h3, h4')) {
-                                    text += (current.innerText || current.textContent) + '\\n';
+                                let current = h.nextElementSibling;
+                                let depth = 0;
+
+                                while (current && depth < 20) {
+                                    if (current.matches('h1, h2, h3')) break;  // Stop at next heading
+
+                                    const currentText = current.innerText || current.textContent || '';
+                                    if (currentText.trim()) {
+                                        text += currentText + '\\n\\n';
+                                    }
+
                                     current = current.nextElementSibling;
+                                    depth++;
                                 }
 
-                                if (text.trim().length > 50) {
+                                if (text.trim().length > 100) {
                                     return text.trim();
                                 }
                             }
                         }
                     }
+
+                    // Strategy 3: Last resort - get largest text block
+                    const allDivs = document.querySelectorAll('div');
+                    let largestDiv = null;
+                    let largestLength = 0;
+
+                    for (const div of allDivs) {
+                        const text = div.innerText || '';
+                        // Check if this div has substantial direct text (not just nested content)
+                        if (text.length > largestLength && text.length > 200 && text.length < 10000) {
+                            largestDiv = div;
+                            largestLength = text.length;
+                        }
+                    }
+
+                    if (largestDiv) {
+                        return largestDiv.innerText.trim();
+                    }
+
                     return null;
                 }
 
@@ -226,12 +279,44 @@ class JobEnricher:
                     return null;
                 }
 
+                // Detect if job is closed/no longer accepting applications
+                function detectClosedJob() {
+                    const text = document.body.innerText.toLowerCase();
+                    const closedPhrases = [
+                        'no longer accepting applications',
+                        'not accepting applications',
+                        'application closed',
+                        'hiring paused',
+                        'position filled',
+                        'position is filled',
+                        'applications have closed',
+                        'job posting has been closed',
+                        'this job is no longer available'
+                    ];
+                    return closedPhrases.some(phrase => text.includes(phrase));
+                }
+
+                // Detect if user has already applied
+                function detectAlreadyApplied() {
+                    const text = document.body.innerText.toLowerCase();
+                    const appliedPhrases = [
+                        'application sent',
+                        'you applied',
+                        'your application',
+                        'view application',
+                        'application submitted'
+                    ];
+                    return appliedPhrases.some(phrase => text.includes(phrase));
+                }
+
                 return {
                     about_job: extractSection(['About the job', 'Job description', 'Description']),
                     about_company: extractSection(['About the company', 'About us', 'Company overview']),
                     compensation: extractCompensation(),
                     work_mode: extractWorkMode(),
                     apply_type: extractApplyType(),
+                    is_closed: detectClosedJob(),
+                    already_applied: detectAlreadyApplied(),
                 };
             }
         """)
