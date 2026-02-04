@@ -83,7 +83,11 @@ test-edge-cases:
 	@echo "Running edge case tests (pytest)..."
 	@cd $(BASE_DIR) && pytest tests/test_edge_cases.py -v
 
-test-all: test-scraper test-enrichment test-extraction test-edge-cases
+test-ai-screening:
+	@echo "Running AI screening tests (pytest, excludes integration tests)..."
+	@cd $(BASE_DIR) && pytest tests/test_ai_screening.py -v -k "not integration"
+
+test-all: test-scraper test-enrichment test-extraction test-edge-cases test-ai-screening
 	@echo "All tests completed!"
 
 help:
@@ -111,6 +115,7 @@ help:
 	@echo "  make test-enrichment   - Test job enrichment (limit=3)"
 	@echo "  make test-extraction   - Run TDD extraction tests (pytest)"
 	@echo "  make test-edge-cases   - Run edge case tests (closed jobs, already applied)"
+	@echo "  make test-ai-screening - Run AI job screening tests (pytest)"
 	@echo "  make test-all          - Run all tests"
 	@echo ""
 	@echo "  make help          - Show this help message"
