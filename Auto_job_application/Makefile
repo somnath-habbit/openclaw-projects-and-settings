@@ -1,4 +1,4 @@
-.PHONY: start stop start-scraper stop-scraper cron-install cron-remove cron-list help
+.PHONY: start stop start-scraper stop-scraper playwright-scrape playwright-enrich cron-install cron-remove cron-list test-scraper test-enrichment test-all help
 
 BASE_DIR := $(abspath .)
 DATA_DIR ?= $(BASE_DIR)/data
@@ -57,15 +57,52 @@ cron-list:
 	@echo "Listing cron entries for $(CRON_TAG)..."
 	@crontab -l 2>/dev/null | sed -n '/# $(CRON_TAG) START/,/# $(CRON_TAG) END/p' || true
 
+# Playwright production targets
+playwright-scrape:
+	@echo "Running Playwright scraper (production)..."
+	@$(BASE_DIR)/scripts/run_playwright_scraper.sh --limit 10 --keywords "Engineering Manager" --location "Bengaluru"
+
+playwright-enrich:
+	@echo "Running Playwright enrichment (production)..."
+	@$(BASE_DIR)/scripts/run_playwright_enricher.sh --limit 20
+
+# Test targets
+test-scraper:
+	@echo "Testing Playwright scraper (assumes active LinkedIn session)..."
+	@cd $(BASE_DIR) && python3 tests/test_scraper_skip_login.py
+
+test-enrichment:
+	@echo "Testing Playwright enrichment (assumes active LinkedIn session)..."
+	@cd $(BASE_DIR) && python3 tests/test_enrichment.py
+
+test-all: test-scraper test-enrichment
+	@echo "All tests completed!"
+
 help:
 	@echo "Available commands:"
+	@echo ""
+	@echo "Application:"
 	@echo "  make start         - Start the application server"
 	@echo "  make stop          - Stop the application server (kill port 5000)"
+	@echo ""
+	@echo "Scraper (OpenClaw CLI):"
 	@echo "  make start-scraper - Start the scraper (scripts/run_scraper.sh)"
 	@echo "  make stop-scraper  - Stop the scraper (scripts/stop_scraper.sh)"
+	@echo ""
+	@echo "Playwright (Production):"
+	@echo "  make playwright-scrape  - Run Playwright scraper (limit=10)"
+	@echo "  make playwright-enrich  - Run Playwright enrichment (limit=20)"
+	@echo ""
+	@echo "Cron Jobs:"
 	@echo "  make cron-install  - Install scraper cron entries into user crontab"
 	@echo "  make cron-remove   - Remove scraper cron entries from user crontab"
 	@echo "  make cron-list     - Show scraper cron entries from user crontab"
+	@echo ""
+	@echo "Testing (Playwright - requires active LinkedIn session):"
+	@echo "  make test-scraper     - Test job scraping (limit=5)"
+	@echo "  make test-enrichment  - Test job enrichment (limit=3)"
+	@echo "  make test-all         - Run all tests"
+	@echo ""
 	@echo "  make help          - Show this help message"
 	@echo ""
 	@echo "Cron guidance: these targets manage your *user* crontab (crontab -e)."
