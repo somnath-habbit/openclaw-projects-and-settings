@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ company_name }} Research - AutoJob</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { margin-top: 30px; max-width: 1200px; }
+        .score-card { text-align: center; padding: 20px; }
+        .score-value { font-size: 3rem; font-weight: bold; }
+        .markdown-content { padding: 20px; }
+        .markdown-content h1 { border-bottom: 2px solid #dee2e6; padding-bottom: 10px; margin-bottom: 20px; }
+        .markdown-content h2 { margin-top: 30px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
+        .markdown-content code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+        .markdown-content pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .markdown-content table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .markdown-content th, .markdown-content td { border: 1px solid #dee2e6; padding: 8px; text-align: left; }
+        .markdown-content th { background-color: #f8f9fa; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>📊 Research Report: {{ company_name }}</h2>
+            <div class="btn-group">
+                <a href="{{ url_for('company_research') }}" class="btn btn-outline-secondary">← Back</a>
+                <a href="{{ url_for('company_research_form', company=company_name) }}" class="btn btn-outline-primary">Re-research</a>
+            </div>
+        </div>
+
+        <!-- Score Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card shadow-sm score-card">
+                    <h5 class="text-muted">Overall Score</h5>
+                    <div class="score-value text-primary">
+                        {{ report.overall_score|round(0)|int if report.overall_score else 'N/A' }}<span class="fs-4">/100</span>
+                    </div>
+                    <div class="mt-2">
+                        {% if report.overall_score %}
+                            {% if report.overall_score >= 85 %}
+                                <span class="badge bg-success fs-6">⭐⭐⭐⭐⭐ Highly Recommended</span>
+                            {% elif report.overall_score >= 70 %}
+                                <span class="badge bg-success fs-6">⭐⭐⭐⭐ Recommended</span>
+                            {% elif report.overall_score >= 55 %}
+                                <span class="badge bg-warning fs-6">⭐⭐⭐ Moderate</span>
+                            {% else %}
+                                <span class="badge bg-danger fs-6">⭐⭐ Caution</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card shadow-sm score-card">
+                    <h5 class="text-muted">India Fit Score 🇮🇳</h5>
+                    <div class="score-value text-success">
+                        {{ report.india_fit_score|round(0)|int if report.india_fit_score else 'N/A' }}<span class="fs-4">/100</span>
+                    </div>
+                    <div class="mt-2">
+                        {% if report.india_fit_score %}
+                            {% if report.india_fit_score >= 80 %}
+                                <span class="badge bg-success fs-6">Excellent Fit</span>
+                            {% elif report.india_fit_score >= 60 %}
+                                <span class="badge bg-primary fs-6">Good Fit</span>
+                            {% else %}
+                                <span class="badge bg-warning fs-6">Moderate Fit</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Component Scores -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Score Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% if report.company_health_score %}
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span>Company Health</span>
+                            <span class="fw-bold">{{ report.company_health_score|round(0)|int }}/100</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-primary" style="width: {{ report.company_health_score }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if report.employee_sentiment_score %}
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span>Employee Sentiment</span>
+                            <span class="fw-bold">{{ report.employee_sentiment_score|round(0)|int }}/100</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success" style="width: {{ report.employee_sentiment_score }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if report.growth_trajectory_score %}
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span>Growth Trajectory</span>
+                            <span class="fw-bold">{{ report.growth_trajectory_score|round(0)|int }}/100</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-info" style="width: {{ report.growth_trajectory_score }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if report.compensation_score %}
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span>Compensation</span>
+                            <span class="fw-bold">{{ report.compensation_score|round(0)|int }}/100</span>
+                        </div>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-warning" style="width: {{ report.compensation_score }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Report -->
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">Complete Research Report</h5>
+            </div>
+            <div class="card-body">
+                <div id="markdown-content" class="markdown-content">
+                    <!-- Markdown will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center my-4">
+            <p class="text-muted">Generated: {{ report.generated_at }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Render markdown
+        const markdownText = {{ report.report_markdown|tojson }};
+        const htmlContent = marked.parse(markdownText);
+        document.getElementById('markdown-content').innerHTML = htmlContent;
+    </script>
+</body>
+</html>

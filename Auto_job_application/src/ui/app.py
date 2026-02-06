@@ -212,5 +212,323 @@ def generate_pdf(job_id):
     db.execute("UPDATE jobs SET cv_path = ? WHERE id = ?", (str(target_path), job_id))
     return jsonify({"status": "success", "path": str(target_path)})
 
+
+# ========== Q&A Management for Easy Apply ==========
+
+@app.route('/qa')
+def qa_manager():
+    """View and manage common Q&A for job applications."""
+    type_filter = request.args.get('type', 'all')
+
+    if type_filter == 'all':
+        responses = db.execute(
+            "SELECT id, question_text, question_type, response, reuse_count, created_at FROM question_responses ORDER BY question_type, question_text",
+            fetch=True
+        )
+    else:
+        responses = db.execute(
+            "SELECT id, question_text, question_type, response, reuse_count, created_at FROM question_responses WHERE question_type = ? ORDER BY question_text",
+            (type_filter,),
+            fetch=True
+        )
+
+    # Get unique question types for filter
+    types = db.execute("SELECT DISTINCT question_type FROM question_responses ORDER BY question_type", fetch=True)
+    types = [t[0] for t in types] if types else []
+
+    return render_template('qa_manager.html', responses=responses, types=types, type_filter=type_filter)
+
+
+@app.route('/qa/add', methods=['POST'])
+def qa_add():
+    """Add a new Q&A entry."""
+    import re
+
+    question = request.form.get('question', '').strip()
+    answer = request.form.get('answer', '').strip()
+    q_type = request.form.get('type', 'general')
+
+    if question and answer:
+        # Create normalized hash
+        question_hash = re.sub(r'[^\w\s]', '', question.lower())
+        question_hash = ' '.join(question_hash.split())
+
+        db.execute(
+            "INSERT OR REPLACE INTO question_responses (question_hash, question_text, question_type, response) VALUES (?, ?, ?, ?)",
+            (question_hash, question, q_type, answer)
+        )
+
+    return redirect(url_for('qa_manager'))
+
+
+@app.route('/qa/edit/<int:qa_id>', methods=['POST'])
+def qa_edit(qa_id):
+    """Edit an existing Q&A entry."""
+    answer = request.form.get('answer', '').strip()
+    q_type = request.form.get('type', 'general')
+
+    if answer:
+        db.execute(
+            "UPDATE question_responses SET response = ?, question_type = ? WHERE id = ?",
+            (answer, q_type, qa_id)
+        )
+
+    return redirect(url_for('qa_manager'))
+
+
+@app.route('/qa/delete/<int:qa_id>', methods=['POST'])
+def qa_delete(qa_id):
+    """Delete a Q&A entry."""
+    db.execute("DELETE FROM question_responses WHERE id = ?", (qa_id,))
+    return redirect(url_for('qa_manager'))
+
+
+@app.route('/qa/bulk_update', methods=['POST'])
+def qa_bulk_update():
+    """Bulk update common fields (CTC, notice period, etc.)."""
+    current_ctc = request.form.get('current_ctc', '').strip()
+    expected_ctc = request.form.get('expected_ctc', '').strip()
+    notice_period = request.form.get('notice_period', '').strip()
+
+    if current_ctc:
+        # Update all current CTC related questions
+        db.execute(
+            "UPDATE question_responses SET response = ? WHERE question_text LIKE '%Current%CTC%' OR question_text LIKE '%current ctc%'",
+            (current_ctc,)
+        )
+
+    if expected_ctc:
+        # Update all expected CTC related questions
+        db.execute(
+            "UPDATE question_responses SET response = ? WHERE question_text LIKE '%expected%CTC%' OR question_text LIKE '%Expected%CTC%' OR question_text LIKE '%expected salary%'",
+            (expected_ctc,)
+        )
+
+    if notice_period:
+        # Update all notice period related questions
+        db.execute(
+            "UPDATE question_responses SET response = ? WHERE question_type = 'notice_period' OR question_text LIKE '%notice%'",
+            (notice_period,)
+        )
+
+    return redirect(url_for('qa_manager'))
+
+
+# ========== Company Research Module ==========
+
+from Auto_job_application.src.company_research.orchestrator import ResearchOrchestrator
+from Auto_job_application.src.company_research.models import (
+    init_company_research_tables,
+    get_all_researched_companies,
+    get_latest_report,
+    get_or_create_company
+)
+import threading
+import uuid
+
+# Initialize company research tables
+try:
+    init_company_research_tables(db)
+except Exception as e:
+    print(f"Company research tables already exist or error: {e}")
+
+# Active research tasks (in-memory storage for progress tracking)
+active_research_tasks = {}
+
+
+@app.route('/company-research')
+def company_research():
+    """Main company research page"""
+
+    # Get companies from researched history
+    researched_companies = get_all_researched_companies(db)
+
+    # Get jobs in offer/final stage
+    offers = db.execute("""
+        SELECT id, title, company, status, discovered_at
+        FROM jobs
+        WHERE status IN ('OFFER', 'FINAL_INTERVIEW', 'OFFER_RECEIVED')
+        ORDER BY discovered_at DESC
+    """, fetch=True)
+
+    return render_template('company_research/index.html',
+                          offers=offers or [],
+                          researched=researched_companies or [])
+
+
+@app.route('/company-research/research', methods=['GET', 'POST'])
+def company_research_form():
+    """Research form and execution"""
+
+    if request.method == 'GET':
+        company_name = request.args.get('company', '')
+        return render_template('company_research/research_form.html',
+                              company_name=company_name)
+
+    # POST - Start research
+    company_name = request.form.get('company_name')
+
+    # Offer details (optional)
+    offer_details = None
+    if request.form.get('base_salary'):
+        base = float(request.form.get('base_salary', 0))
+        bonus = float(request.form.get('bonus', 0))
+        equity = float(request.form.get('equity', 0))
+        offer_details = {
+            'total_compensation': base + bonus + equity,
+            'base_salary': base,
+            'bonus': bonus,
+            'equity': equity
+        }
+
+    # Sources to use
+    enabled_sources = request.form.getlist('sources')
+    if not enabled_sources:
+        enabled_sources = ['google_trends', 'glassdoor', 'stock_market']
+
+    # Generate task ID
+    task_id = str(uuid.uuid4())
+
+    # Start research in background
+    def run_research():
+        orchestrator = ResearchOrchestrator(db)
+
+        def progress_callback(message, progress):
+            if task_id in active_research_tasks:
+                active_research_tasks[task_id]['progress'] = progress
+                active_research_tasks[task_id]['message'] = message
+
+        try:
+            result = orchestrator.research_company(
+                company_name=company_name,
+                offer_details=offer_details,
+                enabled_sources=enabled_sources,
+                progress_callback=progress_callback
+            )
+
+            active_research_tasks[task_id]['status'] = 'complete'
+            active_research_tasks[task_id]['result'] = result
+            active_research_tasks[task_id]['company_id'] = result['company_id']
+
+        except Exception as e:
+            active_research_tasks[task_id]['status'] = 'error'
+            active_research_tasks[task_id]['error'] = str(e)
+
+    # Initialize task
+    active_research_tasks[task_id] = {
+        'status': 'running',
+        'progress': 0.0,
+        'message': 'Starting research...',
+        'company_name': company_name
+    }
+
+    # Start thread
+    thread = threading.Thread(target=run_research)
+    thread.daemon = True
+    thread.start()
+
+    # Redirect to progress page
+    return redirect(url_for('company_research_progress', task_id=task_id))
+
+
+@app.route('/company-research/progress/<task_id>')
+def company_research_progress(task_id):
+    """Progress tracking page"""
+
+    if task_id not in active_research_tasks:
+        return "Task not found", 404
+
+    task = active_research_tasks[task_id]
+
+    return render_template('company_research/progress.html',
+                          task_id=task_id,
+                          company_name=task.get('company_name'))
+
+
+@app.route('/company-research/api/progress/<task_id>')
+def company_research_api_progress(task_id):
+    """API endpoint for progress updates"""
+
+    if task_id not in active_research_tasks:
+        return jsonify({'error': 'Task not found'}), 404
+
+    task = active_research_tasks[task_id]
+
+    response = {
+        'status': task['status'],
+        'progress': task.get('progress', 0),
+        'message': task.get('message', ''),
+        'company_id': task.get('company_id')
+    }
+
+    if task['status'] == 'error':
+        response['error'] = task.get('error', 'Unknown error')
+
+    return jsonify(response)
+
+
+@app.route('/company-research/report/<int:company_id>')
+def company_research_report(company_id):
+    """Display research report"""
+
+    # Get company info
+    company = db.execute(
+        "SELECT name FROM companies WHERE id = ?",
+        (company_id,),
+        fetch=True
+    )
+
+    if not company or len(company) == 0:
+        return "Company not found", 404
+
+    company_name = company[0][0]
+
+    # Get latest report
+    report = get_latest_report(db, company_id)
+
+    if not report:
+        return "No report found for this company", 404
+
+    return render_template('company_research/report.html',
+                          company_name=company_name,
+                          company_id=company_id,
+                          report=report)
+
+
+@app.route('/company-research/compare', methods=['GET', 'POST'])
+def company_research_compare():
+    """Compare multiple companies"""
+
+    if request.method == 'GET':
+        # Show selection form
+        companies = get_all_researched_companies(db)
+        return render_template('company_research/compare.html',
+                              companies=companies or [])
+
+    # POST - Generate comparison
+    company_ids = request.form.getlist('company_ids')
+
+    if len(company_ids) < 2:
+        return "Please select at least 2 companies to compare", 400
+
+    # Get reports for all companies
+    reports = []
+    for company_id in company_ids:
+        company = db.execute(
+            "SELECT name FROM companies WHERE id = ?",
+            (int(company_id),),
+            fetch=True
+        )
+
+        if company and len(company) > 0:
+            report = get_latest_report(db, int(company_id))
+            if report:
+                report['company_name'] = company[0][0]
+                reports.append(report)
+
+    return render_template('company_research/comparison.html',
+                          reports=reports)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

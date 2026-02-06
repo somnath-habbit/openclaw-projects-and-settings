@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Company Comparison - AutoJob</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { margin-top: 30px; max-width: 1400px; }
+        .winner { background-color: #d4edda; }
+        .comparison-table th { background-color: #f8f9fa; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>📊 Company Comparison</h2>
+            <a href="{{ url_for('company_research') }}" class="btn btn-outline-secondary">← Back</a>
+        </div>
+
+        {% if reports and reports|length > 1 %}
+        <!-- Comparison Table -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                {% for report in reports %}
+                                <th class="text-center {% if loop.index == 1 %}winner{% endif %}">
+                                    {{ report.company_name }}
+                                    {% if loop.index == 1 %}🏆{% endif %}
+                                </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Overall Score -->
+                            <tr>
+                                <td><strong>Overall Score</strong></td>
+                                {% for report in reports %}
+                                <td class="text-center {% if loop.index == 1 %}winner{% endif %}">
+                                    <span class="badge bg-primary fs-5">
+                                        {{ report.overall_score|round(0)|int if report.overall_score else 'N/A' }}/100
+                                    </span>
+                                </td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- India Fit -->
+                            <tr>
+                                <td><strong>India Fit 🇮🇳</strong></td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    {{ report.india_fit_score|round(0)|int if report.india_fit_score else 'N/A' }}/100
+                                </td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Recommendation -->
+                            <tr>
+                                <td><strong>Recommendation</strong></td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    {% if report.recommendation == 'highly_recommended' %}
+                                        <span class="badge bg-success">✅ Highly Recommended</span>
+                                    {% elif report.recommendation == 'recommended' %}
+                                        <span class="badge bg-success">✅ Recommended</span>
+                                    {% elif report.recommendation == 'moderate' %}
+                                        <span class="badge bg-warning">⚠️ Moderate</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">❌ Caution</span>
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+
+                            <!-- Component Scores -->
+                            <tr>
+                                <td colspan="{{ reports|length + 1 }}" class="bg-light"><strong>Component Scores</strong></td>
+                            </tr>
+
+                            {% if reports[0].company_health_score %}
+                            <tr>
+                                <td>Company Health</td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    {{ report.company_health_score|round(0)|int if report.company_health_score else 'N/A' }}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+
+                            {% if reports[0].employee_sentiment_score %}
+                            <tr>
+                                <td>Employee Sentiment</td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    {{ report.employee_sentiment_score|round(0)|int if report.employee_sentiment_score else 'N/A' }}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+
+                            {% if reports[0].growth_trajectory_score %}
+                            <tr>
+                                <td>Growth Trajectory</td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    {{ report.growth_trajectory_score|round(0)|int if report.growth_trajectory_score else 'N/A' }}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+
+                            {% if reports[0].compensation_score %}
+                            <tr>
+                                <td>Compensation</td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    {{ report.compensation_score|round(0)|int if report.compensation_score else 'N/A' }}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+
+                            <!-- Generated Date -->
+                            <tr>
+                                <td>Researched</td>
+                                {% for report in reports %}
+                                <td class="text-center">
+                                    <small>{{ report.generated_at[:10] if report.generated_at else 'N/A' }}</small>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Winner Announcement -->
+        <div class="card shadow-sm bg-success text-white">
+            <div class="card-body text-center">
+                <h4>🏆 Recommended Choice</h4>
+                <h2 class="mb-0">{{ reports[0].company_name }}</h2>
+                <p class="mb-0 mt-2">
+                    Based on overall score of {{ reports[0].overall_score|round(0)|int }}/100
+                </p>
+            </div>
+        </div>
+
+        <!-- Individual Reports Links -->
+        <div class="mt-4 text-center">
+            <p class="text-muted">View individual reports:</p>
+            {% for report in reports %}
+            <a href="{{ url_for('company_research_report', company_id=report.company_name) }}" class="btn btn-outline-primary btn-sm m-1">
+                {{ report.company_name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="alert alert-warning">
+            Please select at least 2 companies to compare.
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

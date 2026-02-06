@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Company Research - AutoJob</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { margin-top: 30px; max-width: 1400px; }
+        .company-card { transition: transform 0.2s; }
+        .company-card:hover { transform: translateY(-3px); }
+        .score-badge { font-size: 1.1rem; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>🏢 Company Research</h2>
+            <div class="btn-group">
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">← Back to Jobs</a>
+                <a href="{{ url_for('qa_manager') }}" class="btn btn-outline-success">Q&A Manager</a>
+                <a href="{{ url_for('reports') }}" class="btn btn-outline-primary">Scan Reports</a>
+            </div>
+        </div>
+
+        <!-- Research Any Company -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title">🔍 Research a Company</h5>
+                <form action="{{ url_for('company_research_form') }}" method="GET" class="row g-2">
+                    <div class="col-md-9">
+                        <input type="text" name="company" class="form-control" placeholder="Enter company name (e.g., Razorpay, Paytm)" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Start Research</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Offers -->
+        {% if offers and offers|length > 0 %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">🎁 Active Offers & Final Interviews</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for offer in offers %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ offer[2] }}</h6>
+                            <small class="text-muted">{{ offer[1] }} • {{ offer[3] }}</small>
+                        </div>
+                        <a href="{{ url_for('company_research_form', company=offer[2]) }}" class="btn btn-sm btn-primary">
+                            Research →
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Past Research -->
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">📁 Past Research</h5>
+            </div>
+            <div class="card-body">
+                {% if researched and researched|length > 0 %}
+                <div class="row g-3">
+                    {% for company in researched %}
+                    <div class="col-md-6">
+                        <div class="card company-card shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">{{ company[1] }}</h5>
+                                    <span class="badge bg-primary score-badge">{{ company[2]|round(0)|int if company[2] else 'N/A' }}/100</span>
+                                </div>
+                                <p class="text-muted small mb-2">
+                                    Researched: {{ company[3][:10] if company[3] else 'Unknown' }}
+                                </p>
+                                <a href="{{ url_for('company_research_report', company_id=company[0]) }}" class="btn btn-sm btn-outline-primary">
+                                    View Report →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Compare Button -->
+                {% if researched|length >= 2 %}
+                <div class="mt-3 text-center">
+                    <a href="{{ url_for('company_research_compare') }}" class="btn btn-success">
+                        Compare Companies
+                    </a>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <p class="text-muted text-center py-4">
+                    No companies researched yet. Start by researching a company above!
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
