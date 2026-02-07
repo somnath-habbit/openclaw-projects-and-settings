@@ -45,8 +45,18 @@ HUGGINGFACE_MODEL = os.environ.get("HUGGINGFACE_MODEL", "Qwen/Qwen2.5-72B-Instru
 OLLAMA_ENDPOINT = os.environ.get("OLLAMA_ENDPOINT", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "phi3:mini")
 
+# OpenClaw Credential Manager paths
+OPENCLAW_PROJECT_ROOT = Path(CREDS_BROKER_PATH).parent.parent
+BACKUP_SCRIPT_PATH = OPENCLAW_PROJECT_ROOT / "scripts" / "backup_to_s3.py"
+
 # Browser
 BROWSER_HEADLESS = os.environ.get("PLAYWRIGHT_HEADLESS", "true").lower() != "false"
+
+# Universal Apply Bot settings
+MAX_PAGES_PER_APPLICATION = int(os.environ.get("MAX_PAGES_PER_APPLICATION", "15"))
+MAX_APPLICATIONS_PER_HOUR = int(os.environ.get("MAX_APPLICATIONS_PER_HOUR", "5"))
+DELAY_BETWEEN_APPLICATIONS = int(os.environ.get("DELAY_BETWEEN_APPLICATIONS", "30"))  # seconds
+DRY_RUN = os.environ.get("DRY_RUN", "false").lower() == "true"
 
 
 def get_linkedin_email() -> str | None:

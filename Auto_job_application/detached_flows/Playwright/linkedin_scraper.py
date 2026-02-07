@@ -29,9 +29,10 @@ logger = logging.getLogger("PlaywrightScraper")
 class PlaywrightScraper:
     """Playwright-based LinkedIn job scraper."""
 
-    def __init__(self, dry_run: bool = False, debug: bool = False):
+    def __init__(self, dry_run: bool = False, debug: bool = False, easy_apply_only: bool = False):
         self.dry_run = dry_run
         self.debug = debug
+        self.easy_apply_only = easy_apply_only
         self.db_path = str(DB_PATH)
         self.ai_engine = DecisionEngine()
 
@@ -161,7 +162,7 @@ class PlaywrightScraper:
 
             all_found = []
             offset = 0
-            max_pages = 3  # Per scraping strategy: 2-3 pages max
+            max_pages = max(3, (limit // 7) + 1)  # ~7 jobs per page
             pages_checked = 0
 
             while len(new_jobs) < limit and pages_checked < max_pages:
@@ -169,11 +170,12 @@ class PlaywrightScraper:
                     f"https://www.linkedin.com/jobs/search/"
                     f"?keywords={keywords.replace(' ', '%20')}"
                     f"&location={location.replace(' ', '%20')}"
-                    f"&f_AL=true&start={offset}"
+                    + (f"&f_AL=true" if self.easy_apply_only else "")
+                    + f"&start={offset}"
                 )
 
                 logger.info(f"Opening search: offset={offset}, url={url}")
-                await session.page.goto(url, wait_until="networkidle", timeout=60000)
+                await session.page.goto(url, wait_until="domcontentloaded", timeout=60000)
                 await page_load_delay()  # 10-20s human delay
 
                 if self.debug:
@@ -252,6 +254,7 @@ async def main():
     parser.add_argument("--limit", type=int, default=1, help="Number of NEW jobs to find")
     parser.add_argument("--dry-run", action="store_true", help="Don't write to DB")
     parser.add_argument("--debug", action="store_true", help="Enable debug mode (screenshots)")
+    parser.add_argument("--easy-apply-only", action="store_true", help="Only scrape Easy Apply jobs (default: all jobs)")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -259,7 +262,7 @@ async def main():
         format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
     )
 
-    scraper = PlaywrightScraper(dry_run=args.dry_run, debug=args.debug)
+    scraper = PlaywrightScraper(dry_run=args.dry_run, debug=args.debug, easy_apply_only=args.easy_apply_only)
     jobs = await scraper.scrape(
         keywords=args.keywords,
         location=args.location,

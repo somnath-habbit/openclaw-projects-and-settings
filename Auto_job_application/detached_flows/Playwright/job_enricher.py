@@ -38,13 +38,14 @@ class JobEnricher:
         if self.owns_session and self.session:
             await self.session.close()
 
-    async def enrich_job(self, external_id: str, job_url: str) -> dict:
+    async def enrich_job(self, external_id: str, job_url: str, max_retries: int = 2) -> dict:
         """
         Fetch full job details from individual job page.
 
         Args:
             external_id: LinkedIn job ID
             job_url: Full URL to job page
+            max_retries: Maximum retry attempts for transient failures
 
         Returns:
             dict with keys: about_job, about_company, compensation, work_mode, apply_type, enrich_status, last_enrich_error
@@ -54,10 +55,75 @@ class JobEnricher:
 
         logger.info(f"Enriching job {external_id}")
 
+        # Retry loop for transient failures
+        last_error = None
+        for attempt in range(max_retries + 1):
+            try:
+                return await self._enrich_job_internal(external_id, job_url)
+            except Exception as e:
+                last_error = e
+                if attempt < max_retries:
+                    wait_time = (attempt + 1) * 5  # Backoff: 5s, 10s
+                    logger.warning(f"Attempt {attempt + 1} failed for {external_id}: {e}. Retrying in {wait_time}s...")
+                    await asyncio.sleep(wait_time)
+                else:
+                    logger.error(f"All {max_retries + 1} attempts failed for {external_id}: {e}")
+
+        return {
+            "about_job": None,
+            "about_company": None,
+            "compensation": None,
+            "work_mode": None,
+            "apply_type": None,
+            "is_closed": False,
+            "already_applied": False,
+            "is_invalid": False,
+            "job_url": job_url,
+            "enrich_status": "NEEDS_ENRICH",
+            "last_enrich_error": str(last_error),
+        }
+
+    async def _enrich_job_internal(self, external_id: str, job_url: str) -> dict:
+        """Internal enrichment logic (called by enrich_job with retry wrapper)."""
         try:
             # Navigate to job page (use domcontentloaded for faster, more reliable loading)
-            await self.session.page.goto(job_url, wait_until="domcontentloaded", timeout=45000)
+            response = await self.session.page.goto(job_url, wait_until="domcontentloaded", timeout=45000)
             await page_load_delay()
+
+            # Check for HTTP errors (404, etc.)
+            if response and response.status >= 400:
+                logger.warning(f"Job {external_id} returned HTTP {response.status}")
+                return {
+                    "about_job": None,
+                    "about_company": None,
+                    "compensation": None,
+                    "work_mode": None,
+                    "apply_type": None,
+                    "is_closed": False,
+                    "already_applied": False,
+                    "is_invalid": True,
+                    "job_url": job_url,
+                    "enrich_status": "INVALID",
+                    "last_enrich_error": f"HTTP {response.status}",
+                }
+
+            # Check for invalid page indicators
+            is_invalid = await self._detect_invalid_job()
+            if is_invalid:
+                logger.warning(f"Job {external_id} is invalid (deleted/removed)")
+                return {
+                    "about_job": None,
+                    "about_company": None,
+                    "compensation": None,
+                    "work_mode": None,
+                    "apply_type": None,
+                    "is_closed": False,
+                    "already_applied": False,
+                    "is_invalid": True,
+                    "job_url": job_url,
+                    "enrich_status": "INVALID",
+                    "last_enrich_error": "Job page invalid or deleted",
+                }
 
             # Take initial screenshot
             if self.debug:
@@ -84,6 +150,7 @@ class JobEnricher:
             if details.get("is_closed"):
                 return {
                     **details,
+                    "is_invalid": False,
                     "job_url": job_url,
                     "enrich_status": "CLOSED",
                     "last_enrich_error": "Job no longer accepting applications",
@@ -92,6 +159,7 @@ class JobEnricher:
             if details.get("already_applied"):
                 return {
                     **details,
+                    "is_invalid": False,
                     "job_url": job_url,
                     "enrich_status": "ALREADY_APPLIED",
                     "last_enrich_error": None,
@@ -102,6 +170,7 @@ class JobEnricher:
 
             return {
                 **details,
+                "is_invalid": False,
                 "job_url": job_url,
                 "enrich_status": "NEEDS_ENRICH" if needs_enrich else "ENRICHED",
                 "last_enrich_error": error,
@@ -109,18 +178,7 @@ class JobEnricher:
 
         except Exception as e:
             logger.error(f"Failed to enrich job {external_id}: {e}")
-            return {
-                "about_job": None,
-                "about_company": None,
-                "compensation": None,
-                "work_mode": None,
-                "apply_type": None,
-                "is_closed": False,
-                "already_applied": False,
-                "job_url": job_url,
-                "enrich_status": "NEEDS_ENRICH",
-                "last_enrich_error": str(e),
-            }
+            raise  # Re-raise to trigger retry logic
 
     async def _scroll_page(self):
         """Scroll page to load lazy content."""
@@ -143,6 +201,72 @@ class JobEnricher:
                     await human_delay(0.5, 1)
             except Exception as e:
                 logger.debug(f"Failed to click show more button: {e}")
+
+    async def _detect_invalid_job(self) -> bool:
+        """
+        Check if the job page is invalid (404, deleted, removed).
+
+        Returns:
+            True if the job page appears to be invalid/deleted
+        """
+        invalid_indicators = await self.session.page.evaluate("""
+            () => {
+                const text = document.body.innerText.toLowerCase();
+                const title = document.title.toLowerCase();
+
+                // Check for explicit error messages
+                const errorPhrases = [
+                    'page not found',
+                    '404',
+                    'job not available',
+                    'job no longer exists',
+                    'this job has been removed',
+                    'job has been deleted',
+                    'link you followed may be broken',
+                    'job posting was removed',
+                    'we couldn\\'t find this page',
+                    'this page doesn\\'t exist',
+                    'sorry, this job is not available'
+                ];
+
+                // Check text content
+                const hasErrorPhrase = errorPhrases.some(phrase => text.includes(phrase));
+
+                // Check title
+                const hasErrorTitle = title.includes('not found') ||
+                                     title.includes('404') ||
+                                     title.includes('error');
+
+                // Check if there's a job title on the page (LinkedIn may not use h1)
+                const hasJobTitle = !!document.querySelector(
+                    'h1, h2, ' +
+                    '.job-details-jobs-unified-top-card__job-title, ' +
+                    '.jobs-unified-top-card__job-title, ' +
+                    '[class*="top-card"] [class*="title"], ' +
+                    '[class*="topcard"] [class*="title"]'
+                ) || title.includes('|') && title.includes('linkedin');
+
+                // Check for login redirect (not logged in)
+                const isLoginPage = text.includes('sign in') && text.includes('join linkedin') && !title.includes('|');
+
+                return {
+                    hasErrorPhrase,
+                    hasErrorTitle,
+                    hasJobTitle,
+                    isLoginPage
+                };
+            }
+        """)
+
+        # Job is invalid if error detected or no job title found (and not login page)
+        if invalid_indicators.get("hasErrorPhrase") or invalid_indicators.get("hasErrorTitle"):
+            return True
+
+        # If no job title and not a login page, something is wrong
+        if not invalid_indicators.get("hasJobTitle") and not invalid_indicators.get("isLoginPage"):
+            return True
+
+        return False
 
     async def _extract_job_details(self) -> dict:
         """

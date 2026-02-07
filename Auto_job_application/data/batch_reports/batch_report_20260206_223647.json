@@ -1,0 +1,151 @@
+{
+  "run_id": "20260206_223647",
+  "started_at": "2026-02-06T22:36:47.185635",
+  "config": {
+    "total": 11,
+    "batch_size": 20,
+    "job_timeout": 300,
+    "dry_run": false
+  },
+  "batches": [
+    {
+      "batch_num": 1,
+      "jobs_in_batch": 11,
+      "applied": 0,
+      "failed": 11,
+      "timed_out": 1,
+      "results": [
+        {
+          "job_id": 26,
+          "external_id": "4360411726",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 106.0,
+          "timed_out": false
+        },
+        {
+          "job_id": 5,
+          "external_id": "4232257848",
+          "job_title": "Engineering Manager",
+          "company": null,
+          "success": false,
+          "status": "TIMEOUT",
+          "error": "Job timed out after 300s",
+          "duration_s": 300.0,
+          "timed_out": true
+        },
+        {
+          "job_id": 7,
+          "external_id": "4351782614",
+          "job_title": "Engineering Manager- Backend",
+          "company": null,
+          "success": false,
+          "status": "NO_EASY_APPLY",
+          "error": "Easy Apply button not found",
+          "duration_s": 50.2,
+          "timed_out": false
+        },
+        {
+          "job_id": 34,
+          "external_id": "4343330083",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "NO_EASY_APPLY",
+          "error": "Easy Apply button not found",
+          "duration_s": 55.7,
+          "timed_out": false
+        },
+        {
+          "job_id": 22,
+          "external_id": "4343744280",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 145.9,
+          "timed_out": false
+        },
+        {
+          "job_id": 24,
+          "external_id": "4367264612",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 94.6,
+          "timed_out": false
+        },
+        {
+          "job_id": 27,
+          "external_id": "4342886422",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 124.8,
+          "timed_out": false
+        },
+        {
+          "job_id": 4,
+          "external_id": "4351184597",
+          "job_title": "Cloud Engineering Manager",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 139.3,
+          "timed_out": false
+        },
+        {
+          "job_id": 14,
+          "external_id": "4332251309",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 85.9,
+          "timed_out": false
+        },
+        {
+          "job_id": 48,
+          "external_id": "4367799645",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "PENDING",
+          "error": null,
+          "duration_s": 93.8,
+          "timed_out": false
+        },
+        {
+          "job_id": 43,
+          "external_id": "4366785322",
+          "job_title": "Discovered via AutoFlow",
+          "company": null,
+          "success": false,
+          "status": "NO_EASY_APPLY",
+          "error": "Easy Apply button not found",
+          "duration_s": 37.3,
+          "timed_out": false
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_attempted": 11,
+    "total_applied": 0,
+    "total_failed": 7,
+    "total_timed_out": 1,
+    "total_skipped": 3
+  },
+  "finished_at": "2026-02-06T23:02:42.990544",
+  "aborted": false
+}

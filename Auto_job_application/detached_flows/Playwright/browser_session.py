@@ -76,3 +76,21 @@ class BrowserSession:
     def has_session(self) -> bool:
         """Check if a persisted session file exists."""
         return SESSION_FILE.exists()
+
+    def is_alive(self) -> bool:
+        """Check if browser, context, and page are still alive."""
+        try:
+            if not (self.browser and self.context and self.page):
+                return False
+            # Check if page is closed
+            if self.page.is_closed():
+                return False
+            return True
+        except Exception:
+            return False
+
+    async def restart(self):
+        """Restart the browser session (close and relaunch)."""
+        await self.close()
+        await self.launch()
+        return self.page

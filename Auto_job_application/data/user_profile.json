@@ -773,6 +773,10 @@
     "mentees": "30+",
     "incidentReduction": "83%",
     "velocityImprovement": "62-123%",
-    "databaseOptimization": "66 GB"
+    "databaseOptimization": "66 GB",
+    "currentCTC": "60",
+    "expectedCTC": "90",
+    "noticePeriod": "30",
+    "noticePeriodOfficial": "60"
   }
 }

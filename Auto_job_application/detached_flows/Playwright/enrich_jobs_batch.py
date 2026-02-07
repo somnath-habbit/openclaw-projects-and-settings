@@ -26,6 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger("EnrichBatch")
 
 FINAL_STATUSES = {"APPLIED", "SKIPPED", "BLOCKED", "FAILED"}
+INVALID_STATUSES = {"INVALID", "CLOSED", "ALREADY_APPLIED"}
 
 
 async def enrich_jobs(limit: int = 50, debug: bool = False):
@@ -51,7 +52,7 @@ async def enrich_jobs(limit: int = 50, debug: bool = False):
             about_job IS NULL OR about_job = '' OR
             about_company IS NULL OR about_company = ''
           )
-        ORDER BY discovered_at ASC
+        ORDER BY discovered_at DESC
         LIMIT ?
     """, (limit,))
 
@@ -90,15 +91,48 @@ async def enrich_jobs(limit: int = 50, debug: bool = False):
             # Fetch details
             details = await enricher.enrich_job(external_id, job_url)
 
-            # Determine next status
+            # Check for invalid/deleted jobs - remove from database
+            enrich_status = details.get("enrich_status", "")
+            if enrich_status == "INVALID" or details.get("is_invalid"):
+                cursor.execute("DELETE FROM jobs WHERE id = ?", (job["id"],))
+                conn.commit()
+                logger.warning(f"🗑️ Deleted invalid job {external_id}: {details.get('last_enrich_error')}")
+                continue
+
+            # Handle CLOSED jobs - mark but don't process
+            if enrich_status == "CLOSED":
+                cursor.execute("""
+                    UPDATE jobs
+                    SET status = 'CLOSED',
+                        enrich_status = 'CLOSED',
+                        last_enrich_error = ?,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                """, (details.get("last_enrich_error"), job["id"]))
+                conn.commit()
+                logger.info(f"🔒 Marked job {external_id} as CLOSED")
+                continue
+
+            # Handle ALREADY_APPLIED jobs
+            if enrich_status == "ALREADY_APPLIED":
+                cursor.execute("""
+                    UPDATE jobs
+                    SET status = 'ALREADY_APPLIED',
+                        enrich_status = 'ALREADY_APPLIED',
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                """, (job["id"],))
+                conn.commit()
+                logger.info(f"✅ Job {external_id} already applied")
+                continue
+
+            # Determine next status for valid jobs
             apply_type = details.get("apply_type") or job["apply_type"]
             next_status = job["status"]
 
             if job["status"] not in FINAL_STATUSES:
-                if apply_type == "Easy Apply":
+                if apply_type in {"Easy Apply", "Company Site", "Apply"}:
                     next_status = "READY_TO_APPLY"
-                elif apply_type in {"Company Site", "Apply"}:
-                    next_status = "SKIPPED"
                 else:
                     next_status = "NEEDS_ENRICH"
 

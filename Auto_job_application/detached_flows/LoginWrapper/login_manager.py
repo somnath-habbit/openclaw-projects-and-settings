@@ -21,8 +21,8 @@ async def ensure_logged_in(session: BrowserSession) -> bool:
 
     # Navigate to LinkedIn home
     logger.info("Navigating to LinkedIn...")
-    await page.goto("https://www.linkedin.com", wait_until="networkidle", timeout=30000)
-    await human_delay(2, 4)
+    await page.goto("https://www.linkedin.com", wait_until="domcontentloaded", timeout=60000)
+    await human_delay(3, 5)
 
     # Check current URL and page content
     current_url = page.url
@@ -37,8 +37,18 @@ async def ensure_logged_in(session: BrowserSession) -> bool:
         logger.info("Session valid — already on feed/jobs")
         return True
 
-    # If page has feed elements and no "Sign in" → logged in
-    if "Sign in" not in page_text and ("Feed" in page_text or "Search jobs" in page_text):
+    # If page has feed elements and no "Sign in" button → logged in
+    # Check for various feed indicators
+    feed_indicators = [
+        "Feed" in page_text,
+        "Search jobs" in page_text,
+        "My Network" in page_text,
+        "Messaging" in page_text,
+        "Notifications" in page_text,
+        "Profile viewers" in page_text,
+        "Post impressions" in page_text,
+    ]
+    if any(feed_indicators) and "Sign in" not in page_text:
         logger.info("Already logged in (detected via page content)")
         return True
 
@@ -66,8 +76,22 @@ async def _do_login(session: BrowserSession) -> bool:
     logger.info("Credentials fetched successfully")
 
     # Navigate to login page
-    await page.goto("https://www.linkedin.com/login", wait_until="networkidle", timeout=30000)
-    await human_delay(2, 4)
+    await page.goto("https://www.linkedin.com/login", wait_until="domcontentloaded", timeout=60000)
+    await human_delay(3, 5)
+
+    # Check if we got redirected (already logged in)
+    current_url = page.url
+    if "/feed" in current_url or "/mynetwork" in current_url or "/jobs" in current_url:
+        logger.info("Already logged in (redirected from /login to feed)")
+        await session.save_session()
+        return True
+
+    # Double-check page content in case URL didn't change but content did
+    page_text = await page.evaluate("() => document.body.innerText")
+    if "Sign in" not in page_text and ("Feed" in page_text or "Home" in page_text or "My Network" in page_text):
+        logger.info("Already logged in (feed content detected after /login redirect)")
+        await session.save_session()
+        return True
 
     # Fill email
     email_input = page.locator(

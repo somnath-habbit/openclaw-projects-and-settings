@@ -137,4 +137,41 @@ class DatabaseManager:
         self._ensure_column("jobs", "enriched_at", "DATETIME")
         self._ensure_column("jobs", "enrich_status", "TEXT")
         self._ensure_column("jobs", "last_enrich_error", "TEXT")
+        # External application support columns
+        self._ensure_column("jobs", "apply_url", "TEXT")
+        self._ensure_column("jobs", "site_apply_method", "TEXT")  # easy_apply, external_form, redirect
+
+        # Site accounts table (reference only, actual creds in OpenClaw)
+        self.execute('''
+            CREATE TABLE IF NOT EXISTS site_accounts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                site_name TEXT NOT NULL,
+                site_url TEXT NOT NULL,
+                username TEXT,
+                registered_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                last_login_at DATETIME,
+                status TEXT DEFAULT 'active',
+                credential_tier TEXT DEFAULT 'medium',
+                UNIQUE(site_name, username)
+            )
+        ''')
+
+        # Application logs (detailed per-page logs)
+        self.execute('''
+            CREATE TABLE IF NOT EXISTS application_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id TEXT NOT NULL,
+                site_name TEXT,
+                page_number INTEGER,
+                page_url TEXT,
+                page_type TEXT,
+                fields_filled INTEGER DEFAULT 0,
+                fields_failed INTEGER DEFAULT 0,
+                screenshot_path TEXT,
+                errors TEXT,
+                filled_fields TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+
         print(f"✅ Database initialized at {self.db_path}")
